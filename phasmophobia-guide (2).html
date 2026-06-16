@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phasmophobia — Ghost Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg-deep: #06060D;
+    --bg-panel: #0D0D1A;
+    --bg-card: #121225;
+    --bg-card-hover: #1A1A35;
+    --accent-cyan: #00D4FF;
+    --accent-cyan-dim: #00D4FF33;
+    --accent-gold: #FFD700;
+    --accent-gold-dim: #FFD70033;
+    --accent-red: #FF4444;
+    --accent-red-dim: #FF444433;
+    --accent-green: #00FF88;
+    --accent-green-dim: #00FF8833;
+    --accent-purple: #9B59B6;
+    --accent-orange: #FF8C00;
+    --text-primary: #E8E8F0;
+    --text-secondary: #8888AA;
+    --text-dim: #555570;
+    --border: #1E1E3A;
+    --glow-cyan: 0 0 20px #00D4FF44, 0 0 40px #00D4FF22;
+    --glow-gold: 0 0 20px #FFD70044, 0 0 40px #FFD70022;
+    --glow-red: 0 0 20px #FF444444;
+    --glow-purple: 0 0 20px #9B59B644;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg-deep); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; position: relative; }
+
+  /* PARTICLES */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .particle { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: var(--accent-cyan); opacity: 0; animation: float-particle linear infinite; }
+  @keyframes float-particle {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 0.6; } 90% { opacity: 0.3; }
+    100% { transform: translateY(-10px) translateX(30px); opacity: 0; }
+  }
+
+  /* HEADER */
+  header {
+    position: relative; z-index: 10;
+    background: linear-gradient(180deg, #06060D 0%, transparent 100%);
+    padding: 18px 28px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .logo-area { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: radial-gradient(circle, #1E3A5F, #06060D);
+    border: 1px solid var(--accent-cyan); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    box-shadow: var(--glow-cyan); animation: pulse-glow 3s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: var(--glow-cyan); }
+    50% { box-shadow: 0 0 30px #00D4FF66, 0 0 60px #00D4FF33; }
+  }
+  .logo-text h1 { font-family: 'Creepster', cursive; font-size: 26px; color: var(--accent-cyan); letter-spacing: 2px; text-shadow: 0 0 20px var(--accent-cyan); line-height: 1; }
+  .logo-text p { font-size: 10px; color: var(--text-secondary); letter-spacing: 3px; text-transform: uppercase; margin-top: 3px; }
+
+  .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .lang-toggle { display: flex; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .lang-btn { padding: 7px 12px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; background: transparent; color: var(--text-secondary); transition: all 0.2s; letter-spacing: 0.5px; }
+  .lang-btn.active { background: var(--accent-cyan); color: #000; }
+  .reset-btn { padding: 7px 14px; background: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; letter-spacing: 1px; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+  .reset-btn:hover { background: var(--accent-red); color: #fff; box-shadow: var(--glow-red); }
+
+  /* LAYOUT */
+  .app-layout { position: relative; z-index: 5; display: grid; grid-template-columns: 290px 1fr 350px; gap: 0; height: calc(100vh - 78px); overflow: hidden; }
+  .panel { border-right: 1px solid var(--border); overflow-y: auto; padding: 16px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  .panel:last-child { border-right: none; }
+  .panel::-webkit-scrollbar { width: 4px; }
+  .panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .panel-title { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .panel-title i { color: var(--accent-cyan); font-size: 11px; }
+
+  /* EVIDENCE CARDS */
+  .evidence-grid { display: flex; flex-direction: column; gap: 7px; }
+  .evidence-card { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); padding: 10px 12px; cursor: pointer; transition: all 0.25s; display: flex; align-items: center; gap: 10px; user-select: none; position: relative; overflow: hidden; }
+  .evidence-card:hover { border-color: var(--accent-cyan); background: var(--bg-card-hover); }
+  .evidence-card.confirmed { border-color: var(--accent-green); background: var(--accent-green-dim); box-shadow: 0 0 10px var(--accent-green-dim); }
+  .evidence-card.ruled-out { border-color: var(--accent-red); background: var(--accent-red-dim); opacity: 0.7; }
+  .evidence-card.impossible { opacity: 0.25; pointer-events: none; }
+  .ev-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; background: var(--bg-deep); border: 1px solid var(--border); transition: all 0.25s; }
+  .evidence-card.confirmed .ev-icon { background: var(--accent-green-dim); border-color: var(--accent-green); }
+  .evidence-card.ruled-out .ev-icon { background: var(--accent-red-dim); border-color: var(--accent-red); }
+  .ev-info { flex: 1; min-width: 0; }
+  .ev-name { font-size: 12px; font-weight: 600; color: var(--text-primary); line-height: 1.2; }
+  .ev-sub { font-size: 9px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+  .ev-state { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 9px; transition: all 0.25s; flex-shrink: 0; }
+  .evidence-card.confirmed .ev-state { background: var(--accent-green); border-color: var(--accent-green); color: #000; }
+  .evidence-card.ruled-out .ev-state { background: var(--accent-red); border-color: var(--accent-red); color: #fff; }
+
+  .evidence-legend { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .legend-item { font-size: 10px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .click-hint { font-size: 10px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.4; padding: 6px 8px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border); }
+
+  /* GHOST PANEL */
+  .ghost-stats { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 14px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 600; color: var(--accent-cyan); line-height: 1; }
+  .stat-num.zero { color: var(--accent-red); }
+  .stat-label { font-size: 9px; color: var(--text-secondary); margin-top: 3px; letter-spacing: 1px; }
+  .filter-status { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 11px; }
+  .filter-active { border-color: var(--accent-cyan); }
+
+  .ghost-grid { display: flex; flex-direction: column; gap: 7px; }
+  .ghost-card { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); padding: 12px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; animation: slide-in 0.2s ease; }
+  .ghost-card:hover { border-color: var(--accent-gold); background: var(--bg-card-hover); }
+  .ghost-card.selected { border-color: var(--accent-gold); box-shadow: var(--glow-gold); background: #1A1500; }
+  .ghost-card.eliminated { opacity: 0.2; pointer-events: none; }
+  .ghost-card.perfect-match { border-color: var(--accent-cyan); box-shadow: var(--glow-cyan); }
+  .ghost-card.mimic-special { border-color: var(--accent-purple) !important; box-shadow: var(--glow-purple) !important; }
+
+  @keyframes slide-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .ghost-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
+  .ghost-name-block { flex: 1; }
+  .ghost-name { font-size: 14px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+  .ghost-name-en { font-size: 10px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+  .ghost-prob { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: var(--bg-deep); border: 1px solid var(--border); white-space: nowrap; }
+  .ghost-prob.high { color: var(--accent-green); border-color: var(--accent-green); }
+  .ghost-prob.mid { color: var(--accent-gold); border-color: var(--accent-gold); }
+  .ghost-prob.low { color: var(--text-secondary); }
+
+  .ghost-evidence-row { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 6px; }
+  .ev-chip { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--bg-deep); border: 1px solid var(--border); color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; transition: all 0.2s; }
+  .ev-chip.match { background: var(--accent-green-dim); border-color: var(--accent-green); color: var(--accent-green); }
+  .ev-chip.mismatch { background: var(--accent-red-dim); border-color: var(--accent-red); color: var(--accent-red); text-decoration: line-through; }
+  .ev-chip.mimic-orb { background: #9B59B633; border-color: var(--accent-purple); color: var(--accent-purple); }
+
+  .ghost-hint { font-size: 10px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 5px; }
+  .ghost-hint span { color: var(--accent-gold); }
+  .prob-bar-bg { height: 3px; background: var(--bg-deep); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .prob-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .match-badge { position: absolute; top: 8px; right: 8px; background: var(--accent-cyan); color: #000; font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 3px; letter-spacing: 1px; }
+  .mimic-badge { position: absolute; top: 8px; right: 8px; background: var(--accent-purple); color: #fff; font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 3px; letter-spacing: 1px; }
+
+  .no-match { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+  .no-match i { font-size: 42px; margin-bottom: 14px; display: block; color: var(--accent-red); opacity: 0.5; }
+  .no-match h3 { font-size: 15px; margin-bottom: 8px; color: var(--text-primary); }
+  .no-match p { font-size: 11px; line-height: 1.6; }
+
+  /* GUIDE PANEL */
+  .guide-tabs { display: flex; gap: 3px; margin-bottom: 14px; background: var(--bg-card); padding: 4px; border-radius: var(--radius-sm); flex-wrap: wrap; }
+  .guide-tab { flex: 1; min-width: 60px; padding: 7px 4px; text-align: center; cursor: pointer; font-size: 10px; font-weight: 700; border-radius: 5px; color: var(--text-secondary); transition: all 0.2s; letter-spacing: 0.5px; border: none; background: transparent; text-transform: uppercase; }
+  .guide-tab.active { background: var(--accent-cyan); color: #000; }
+  .guide-section { display: none; }
+  .guide-section.active { display: block; }
+
+  /* EVIDENCE GUIDE ACCORDION */
+  .evidence-guide-item { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); margin-bottom: 8px; overflow: hidden; }
+  .evidence-guide-header { padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; justify-content: space-between; transition: background 0.2s; }
+  .evidence-guide-header:hover { background: var(--bg-card-hover); }
+  .evidence-guide-header-left { display: flex; align-items: center; gap: 8px; }
+  .evidence-guide-body { padding: 0 12px; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.2s; }
+  .evidence-guide-body.open { max-height: 800px; padding: 0 12px 12px; }
+  .guide-step { display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-start; }
+  .guide-step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--accent-cyan); color: #000; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .guide-step-text { font-size: 11px; line-height: 1.6; color: var(--text-secondary); }
+  .guide-step-text strong { color: var(--text-primary); }
+  .guide-step-text em { color: var(--accent-cyan); font-style: normal; }
+  .tip-box { background: var(--accent-gold-dim); border: 1px solid var(--accent-gold); border-radius: 6px; padding: 8px 10px; margin-top: 8px; font-size: 10px; color: var(--accent-gold); line-height: 1.5; display: flex; gap: 6px; align-items: flex-start; }
+  .warning-box { background: var(--accent-red-dim); border: 1px solid var(--accent-red); border-radius: 6px; padding: 8px 10px; margin-top: 6px; font-size: 10px; color: var(--accent-red); line-height: 1.5; display: flex; gap: 6px; align-items: flex-start; }
+  .info-box { background: var(--accent-cyan-dim); border: 1px solid var(--accent-cyan); border-radius: 6px; padding: 8px 10px; margin-top: 6px; font-size: 10px; color: var(--accent-cyan); line-height: 1.5; display: flex; gap: 6px; align-items: flex-start; }
+
+  /* GHOST DETAIL */
+  .ghost-detail { display: none; }
+  .ghost-detail.open { display: block; }
+  .ghost-detail-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .back-btn { background: none; border: 1px solid var(--border); color: var(--text-secondary); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; transition: all 0.2s; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .back-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .detail-section { margin-bottom: 14px; }
+  .detail-section-title { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .detail-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; }
+  .detail-text { font-size: 11px; line-height: 1.7; color: var(--text-secondary); }
+  .detail-text strong { color: var(--text-primary); }
+  .strength-item, .weakness-item { display: flex; gap: 8px; align-items: flex-start; padding: 8px; border-radius: 6px; margin-bottom: 5px; font-size: 11px; line-height: 1.5; }
+  .strength-item { background: var(--accent-red-dim); color: var(--accent-red); }
+  .weakness-item { background: var(--accent-green-dim); color: var(--accent-green); }
+  .sanity-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-deep); border: 1px solid var(--accent-purple); color: var(--accent-purple); font-size: 10px; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; margin-top: 6px; margin-right: 6px; }
+  .speed-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-deep); border: 1px solid var(--accent-orange); color: var(--accent-orange); font-size: 10px; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+
+  /* CURSED OBJECTS */
+  .cursed-grid { display: flex; flex-direction: column; gap: 8px; }
+  .cursed-card { border: 1px solid var(--accent-purple); border-radius: var(--radius-sm); background: #0D0A1A; overflow: hidden; }
+  .cursed-header { padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; justify-content: space-between; transition: background 0.2s; }
+  .cursed-header:hover { background: #1A0D2E; }
+  .cursed-header-left { display: flex; align-items: center; gap: 8px; }
+  .cursed-icon { width: 30px; height: 30px; border-radius: 6px; background: #9B59B622; border: 1px solid var(--accent-purple); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .cursed-name { font-size: 12px; font-weight: 700; color: var(--accent-purple); }
+  .cursed-sub { font-size: 9px; color: var(--text-secondary); }
+  .cursed-body { padding: 0 12px; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.2s; }
+  .cursed-body.open { max-height: 800px; padding: 0 12px 12px; }
+  .cursed-effect { font-size: 11px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px; }
+  .cursed-effect strong { color: var(--text-primary); }
+  .cursed-danger { background: #FF444422; border: 1px solid var(--accent-red); border-radius: 5px; padding: 6px 8px; font-size: 10px; color: var(--accent-red); line-height: 1.5; display: flex; gap: 5px; margin-top: 6px; }
+  .cursed-tip2 { background: #9B59B622; border: 1px solid var(--accent-purple); border-radius: 5px; padding: 6px 8px; font-size: 10px; color: var(--accent-purple); line-height: 1.5; display: flex; gap: 5px; margin-top: 6px; }
+
+  /* TIPS SECTION */
+  .tip-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 7px; }
+  .tip-card-title { font-size: 11px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .tip-card-text { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* SECTION HEADER for guide sub-sections */
+  .section-header { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--accent-purple); text-transform: uppercase; margin: 14px 0 8px; display: flex; align-items: center; gap: 6px; }
+
+  @media (max-width: 1100px) { .app-layout { grid-template-columns: 260px 1fr 310px; } }
+  @media (max-width: 900px) { .app-layout { grid-template-columns: 1fr; height: auto; overflow: visible; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="particles"></div>
+
+<header>
+  <div class="logo-area">
+    <div class="logo-icon">👻</div>
+    <div class="logo-text">
+      <h1>PHASMOPHOBIA</h1>
+      <p id="header-subtitle">Guía de Investigación</p>
+    </div>
+  </div>
+  <div class="header-controls">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es-la')">ES-LA</button>
+      <button class="lang-btn" onclick="setLang('es-es')">ES-ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="reset-btn" onclick="resetAll()">
+      <i class="fas fa-redo"></i>
+      <span id="btn-reset">Reiniciar</span>
+    </button>
+  </div>
+</header>
+
+<div class="app-layout">
+  <!-- LEFT: EVIDENCE -->
+  <div class="panel">
+    <div class="panel-title"><i class="fas fa-flask"></i> <span id="lbl-evidences">Evidencias</span></div>
+    <div class="evidence-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div> <span id="lbl-confirmed">Confirmada</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> <span id="lbl-ruled">Descartada</span></div>
+    </div>
+    <div class="click-hint" id="lbl-click-hint">Click 1x = Confirmar · Click 2x = Descartar · Click 3x = Limpiar</div>
+    <div class="evidence-grid" id="evidence-grid"></div>
+  </div>
+
+  <!-- CENTER: GHOSTS -->
+  <div class="panel">
+    <div class="panel-title"><i class="fas fa-ghost"></i> <span id="lbl-ghosts">Fantasmas Posibles</span></div>
+    <div class="ghost-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="stat-possible">24</div>
+        <div class="stat-label" id="lbl-stat-possible">POSIBLES</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-ev" style="color:var(--accent-green)">0</div>
+        <div class="stat-label" id="lbl-stat-ev">EVIDENCIAS</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-elim" style="color:var(--accent-red)">0</div>
+        <div class="stat-label" id="lbl-stat-elim">ELIMINADOS</div>
+      </div>
+    </div>
+    <div id="filter-status" class="filter-status" style="display:none">
+      <i class="fas fa-filter" style="color:var(--accent-cyan)"></i>
+      <span id="filter-text" style="font-size:11px;color:var(--text-secondary)"></span>
+    </div>
+    <div class="ghost-grid" id="ghost-grid"></div>
+  </div>
+
+  <!-- RIGHT: GUIDE -->
+  <div class="panel">
+    <div class="panel-title"><i class="fas fa-book-open"></i> <span id="lbl-guide">Guía</span></div>
+    <!-- Ghost detail -->
+    <div id="ghost-detail" class="ghost-detail">
+      <div class="ghost-detail-header">
+        <button class="back-btn" onclick="closeGhostDetail()"><i class="fas fa-arrow-left"></i> <span id="lbl-back">Volver</span></button>
+        <h2 id="detail-ghost-name" style="font-family:'Creepster',cursive;font-size:20px;color:var(--accent-gold);text-shadow:var(--glow-gold)"></h2>
+      </div>
+      <div id="detail-content"></div>
+    </div>
+    <!-- Main guide -->
+    <div id="guide-main">
+      <div class="guide-tabs">
+        <button class="guide-tab active" onclick="switchTab('how-to')" id="tab-btn-how-to">CÓMO</button>
+        <button class="guide-tab" onclick="switchTab('cursed')" id="tab-btn-cursed">MALDITOS</button>
+        <button class="guide-tab" onclick="switchTab('tips')" id="tab-btn-tips">TIPS</button>
+      </div>
+      <div id="tab-how-to" class="guide-section active"></div>
+      <div id="tab-cursed" class="guide-section"></div>
+      <div id="tab-tips" class="guide-section"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// TRANSLATIONS — 3 idiomas: ES-LA (Latino), ES-ES (Castellano), EN
+// ============================================================
+const LANGS = {
+  'es-la': {
+    subtitle: 'Guía de Investigación',
+    reset: 'Reiniciar',
+    evidences: 'Evidencias',
+    confirmed: 'Confirmada',
+    ruled: 'Descartada',
+    'click-hint': 'Click 1x = Confirmar · Click 2x = Descartar · Click 3x = Limpiar',
+    ghosts: 'Fantasmas Posibles',
+    'stat-possible': 'POSIBLES',
+    'stat-ev': 'EVIDENCIAS',
+    'stat-elim': 'ELIMINADOS',
+    guide: 'Guía',
+    back: 'Volver',
+    'tab-how-to': 'CÓMO',
+    'tab-cursed': 'MALDITOS',
+    'tab-tips': 'TIPS',
+    filter: 'Filtrando:',
+    'no-ghosts-title': '¡Sin coincidencias!',
+    'no-ghosts-text': 'Ningún fantasma coincide exactamente. Verifica si descartaste algo por error.',
+    behavior: 'Comportamiento',
+    strength: 'Fortaleza',
+    weakness: 'Debilidad',
+    'key-hint': 'Pista clave',
+    'sanity-lbl': 'Cordura',
+    'speed-lbl': 'Velocidad',
+    'ev-lbl': 'Evidencias',
+    'match-badge': 'COINCIDE',
+    'mimic-badge': 'MIMO',
+    'how-to-intro': 'Toca cada evidencia para ver cómo encontrarla.',
+    'cursed-intro': 'Los objetos malditos generan una cacería si se usan incorrectamente. Úsalos con cuidado.',
+    'tips-intro': 'Consejos esenciales para sobrevivir la investigación.',
+    'tips-section': 'CONSEJOS GENERALES',
+    'phase-section': 'FASES DE INVESTIGACIÓN',
+  },
+  'es-es': {
+    subtitle: 'Guía de Investigación',
+    reset: 'Reiniciar',
+    evidences: 'Evidencias',
+    confirmed: 'Confirmada',
+    ruled: 'Descartada',
+    'click-hint': 'Clic 1x = Confirmar · Clic 2x = Descartar · Clic 3x = Limpiar',
+    ghosts: 'Fantasmas Posibles',
+    'stat-possible': 'POSIBLES',
+    'stat-ev': 'EVIDENCIAS',
+    'stat-elim': 'ELIMINADOS',
+    guide: 'Guía',
+    back: 'Volver',
+    'tab-how-to': 'CÓMO',
+    'tab-cursed': 'MALDITOS',
+    'tab-tips': 'CONSEJOS',
+    filter: 'Filtrando:',
+    'no-ghosts-title': '¡Sin coincidencias!',
+    'no-ghosts-text': 'Ningún fantasma coincide exactamente. Comprueba si descartaste algo por error.',
+    behavior: 'Comportamiento',
+    strength: 'Fortaleza',
+    weakness: 'Debilidad',
+    'key-hint': 'Pista clave',
+    'sanity-lbl': 'Cordura',
+    'speed-lbl': 'Velocidad',
+    'ev-lbl': 'Evidencias',
+    'match-badge': 'COINCIDE',
+    'mimic-badge': 'MIMO',
+    'how-to-intro': 'Pulsa cada evidencia para ver cómo encontrarla.',
+    'cursed-intro': 'Los objetos malditos generan una cacería si se usan incorrectamente. Úsalos con precaución.',
+    'tips-intro': 'Consejos esenciales para sobrevivir la investigación.',
+    'tips-section': 'CONSEJOS GENERALES',
+    'phase-section': 'FASES DE INVESTIGACIÓN',
+  },
+  en: {
+    subtitle: 'Ghost Investigation Guide',
+    reset: 'Reset',
+    evidences: 'Evidence',
+    confirmed: 'Confirmed',
+    ruled: 'Ruled Out',
+    'click-hint': 'Click 1x = Confirm · Click 2x = Rule Out · Click 3x = Clear',
+    ghosts: 'Possible Ghosts',
+    'stat-possible': 'POSSIBLE',
+    'stat-ev': 'EVIDENCE',
+    'stat-elim': 'ELIMINATED',
+    guide: 'Guide',
+    back: 'Back',
+    'tab-how-to': 'HOW TO',
+    'tab-cursed': 'CURSED',
+    'tab-tips': 'TIPS',
+    filter: 'Filtering:',
+    'no-ghosts-title': 'No matches!',
+    'no-ghosts-text': 'No ghost matches exactly. Check if you ruled out something by mistake.',
+    behavior: 'Behavior',
+    strength: 'Strength',
+    weakness: 'Weakness',
+    'key-hint': 'Key hint',
+    'sanity-lbl': 'Sanity',
+    'speed-lbl': 'Speed',
+    'ev-lbl': 'Evidence',
+    'match-badge': 'MATCH',
+    'mimic-badge': 'MIMIC',
+    'how-to-intro': 'Click each evidence to see how to find it.',
+    'cursed-intro': 'Cursed objects trigger a hunt if used incorrectly. Use them carefully.',
+    'tips-intro': 'Essential tips to survive the investigation.',
+    'tips-section': 'GENERAL TIPS',
+    'phase-section': 'INVESTIGATION PHASES',
+  }
+};
+
+// ============================================================
+// EVIDENCE DATA — nombres exactos del juego en los 3 idiomas
+// ============================================================
+const EVIDENCES = [
+  {
+    id: 'emf5', icon: '📡', color: '#FF6B9D',
+    name: { 'es-la': 'EMF Nivel 5', 'es-es': 'EMF Nivel 5', en: 'EMF Level 5' },
+    abbr: 'EMF5'
+  },
+  {
+    id: 'spirit_box', icon: '📻', color: '#9B59B6',
+    name: { 'es-la': 'Caja del Espíritu', 'es-es': 'Caja del Espíritu', en: 'Spirit Box' },
+    abbr: 'SB'
+  },
+  {
+    id: 'ultraviolet', icon: '🔦', color: '#8B5CF6',
+    name: { 'es-la': 'Ultravioleta', 'es-es': 'Ultravioleta', en: 'Ultraviolet' },
+    abbr: 'UV'
+  },
+  {
+    id: 'ghost_orb', icon: '🔮', color: '#00D4FF',
+    name: { 'es-la': 'Orbes Fantasmales', 'es-es': 'Orbes Fantasmales', en: 'Ghost Orb' },
+    abbr: 'ORB'
+  },
+  {
+    id: 'ghost_writing', icon: '✍️', color: '#22C55E',
+    name: { 'es-la': 'Escritura Fantasmal', 'es-es': 'Escritura Fantasmal', en: 'Ghost Writing' },
+    abbr: 'GW'
+  },
+  {
+    id: 'freezing', icon: '🌡️', color: '#60A5FA',
+    name: { 'es-la': 'Temperatura de Congelación', 'es-es': 'Temperatura de Congelación', en: 'Freezing Temperatures' },
+    abbr: 'TEMP'
+  },
+  {
+    id: 'dots', icon: '🟢', color: '#84CC16',
+    name: { 'es-la': 'Proyector D.O.T.S.', 'es-es': 'Proyector D.O.T.S.', en: 'D.O.T.S. Projector' },
+    abbr: 'DOTS'
+  },
+];
+
+// ============================================================
+// GHOST DATABASE — 24 fantasmas, nombres exactos del juego
+// NOTE: El Mimo (The Mimic) siempre tiene orbes como evidencia
+// adicional (4ª evidencia real). isMimic=true lo maneja en lógica.
+// ============================================================
+const GHOSTS = [
+  {
+    id: 'spirit',
+    name: { 'es-la': 'Espíritu', 'es-es': 'Espíritu', en: 'Spirit' },
+    evidences: ['emf5', 'spirit_box', 'ghost_writing'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Ninguna fortaleza especial', 'es-es': 'Ninguna fortaleza especial', en: 'No special strength' },
+    weakness: { 'es-la': 'El incienso lo aleja 180 segundos (doble de lo normal)', 'es-es': 'El incienso lo aleja 180 segundos (el doble de lo normal)', en: 'Smudge sticks keep it away for 180 seconds (double the normal)' },
+    behavior: { 'es-la': 'Fantasma base sin habilidades únicas. El más común. Caza a 50% de cordura.', 'es-es': 'Fantasma base sin habilidades únicas. El más común. Caza al 50% de cordura.', en: 'Base ghost with no unique abilities. Most common. Hunts at 50% sanity.' },
+    hint: { 'es-la': 'Si el incienso dura mucho tiempo bloqueando la caza = Espíritu', 'es-es': 'Si el incienso dura mucho tiempo bloqueando la caza = Espíritu', en: 'If smudge sticks last a long time blocking hunts = Spirit' },
+  },
+  {
+    id: 'wraith',
+    name: { 'es-la': 'Espectro', 'es-es': 'Espectro', en: 'Wraith' },
+    evidences: ['emf5', 'spirit_box', 'dots'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'No deja huellas al caminar. Puede teletransportarse cerca de jugadores.', 'es-es': 'No deja huellas al caminar. Puede teletransportarse cerca de jugadores.', en: 'Does not leave footprints. Can teleport near players.' },
+    weakness: { 'es-la': 'La sal lo afecta: si la pisa, el EMF aumenta y no puede volver a pisarla', 'es-es': 'La sal le afecta: si la pisa, el EMF aumenta y no puede volver a pisarla', en: 'Salt affects it: stepping in it raises EMF and it avoids salt afterward' },
+    behavior: { 'es-la': 'No deja huellas UV aunque camine por sal. Puede aparecer cerca de jugadores.', 'es-es': 'No deja huellas UV aunque camine por sal. Puede aparecer cerca de jugadores.', en: 'Leaves no UV footprints even through salt. Can appear near players.' },
+    hint: { 'es-la': 'Alta actividad EMF pero sin huellas UV nunca = sospecha de Espectro', 'es-es': 'Alta actividad EMF pero sin huellas UV nunca = sospecha de Espectro', en: 'High EMF but never any UV footprints = suspect Wraith' },
+  },
+  {
+    id: 'phantom',
+    name: { 'es-la': 'Fantasma', 'es-es': 'Fantasma', en: 'Phantom' },
+    evidences: ['spirit_box', 'ultraviolet', 'dots'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Ver al fantasma drena la cordura muy rápido. Durante cacería es casi invisible.', 'es-es': 'Ver al fantasma drena la cordura muy rápido. Durante cacería es casi invisible.', en: 'Looking at it drains sanity fast. Nearly invisible during hunts.' },
+    weakness: { 'es-la': 'Fotografiarlo lo hace desaparecer temporalmente (aunque el EMF persiste)', 'es-es': 'Fotografiarlo lo hace desaparecer temporalmente (aunque el EMF persiste)', en: 'Taking its photo makes it disappear temporarily (EMF persists)' },
+    behavior: { 'es-la': 'Drena mucha cordura solo con estar visible. Parpadea muy poco durante cacería.', 'es-es': 'Drena mucha cordura solo con estar visible. Parpadea muy poco durante cacería.', en: 'Greatly drains sanity just by being visible. Barely blinks during hunt.' },
+    hint: { 'es-la': 'Toma su foto: si desaparece pero la actividad continúa = Fantasma', 'es-es': 'Toma su foto: si desaparece pero la actividad continúa = Fantasma', en: 'Take its photo: if it disappears but activity continues = Phantom' },
+  },
+  {
+    id: 'poltergeist',
+    name: { 'es-la': 'Poltergeist', 'es-es': 'Poltergeist', en: 'Poltergeist' },
+    evidences: ['spirit_box', 'ultraviolet', 'ghost_writing'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Puede lanzar múltiples objetos simultáneamente y con gran fuerza', 'es-es': 'Puede lanzar múltiples objetos simultáneamente y con gran fuerza', en: 'Can throw multiple objects simultaneously with great force' },
+    weakness: { 'es-la': 'En cuartos vacíos sin objetos, pierde efectividad total', 'es-es': 'En cuartos vacíos sin objetos, pierde toda su efectividad', en: 'In empty rooms with no objects, it loses all effectiveness' },
+    behavior: { 'es-la': 'Hiperactivo lanzando objetos. Puede bajar cordura al tirar muchos a la vez.', 'es-es': 'Hiperactivo lanzando objetos. Puede reducir la cordura al tirar varios a la vez.', en: 'Hyperactive throwing objects. Can drain sanity by throwing many at once.' },
+    hint: { 'es-la': 'Varios objetos lanzados al mismo tiempo = probablemente Poltergeist', 'es-es': 'Varios objetos lanzados al mismo tiempo = probablemente Poltergeist', en: 'Multiple objects thrown simultaneously = likely Poltergeist' },
+  },
+  {
+    id: 'banshee',
+    name: { 'es-la': 'Banshee', 'es-es': 'Banshee', en: 'Banshee' },
+    evidences: ['ultraviolet', 'ghost_orb', 'dots'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Elige un objetivo fijo y siempre lo persigue a él, ignorando a los demás', 'es-es': 'Elige un objetivo fijo y siempre lo persigue a él, ignorando a los demás', en: 'Chooses a fixed target and always pursues them, ignoring others' },
+    weakness: { 'es-la': 'El crucifijo la detiene con mayor efectividad. Canta con microfónica parabólica.', 'es-es': 'El crucifijo la detiene con mayor efectividad. Canta con micrófono parabólico.', en: 'Crucifix is more effective. Unique singing heard with parabolic mic.' },
+    behavior: { 'es-la': 'Siempre persigue al mismo jugador. Su canto único se detecta con micrófono parabólico.', 'es-es': 'Siempre persigue al mismo jugador. Su canto único se detecta con micrófono parabólico.', en: 'Always targets the same player. Unique singing heard with parabolic mic.' },
+    hint: { 'es-la': 'Un jugador siempre perseguido = Banshee. Usa el micrófono parabólico para escucharla.', 'es-es': 'Un jugador siempre perseguido = Banshee. Usa el micrófono parabólico para escucharla.', en: 'Same player always targeted = Banshee. Use parabolic mic to hear its singing.' },
+  },
+  {
+    id: 'jinn',
+    name: { 'es-la': 'Djinn', 'es-es': 'Djinn', en: 'Jinn' },
+    evidences: ['emf5', 'ultraviolet', 'freezing'],
+    sanity: 50, speed: { 'es-la': '2.5 m/s si el objetivo está lejos con luz encendida', 'es-es': '2.5 m/s si el objetivo está lejos con luz encendida', en: '2.5 m/s if target is far with power on' },
+    strength: { 'es-la': 'Muy rápido corriendo hacia un objetivo lejano cuando la electricidad está activa', 'es-es': 'Muy rápido corriendo hacia un objetivo lejano cuando la electricidad está activa', en: 'Very fast running toward a far target when power is on' },
+    weakness: { 'es-la': 'Apagar el cuadro eléctrico lo ralentiza y pierde su velocidad especial', 'es-es': 'Apagar el cuadro eléctrico lo ralentiza y pierde su velocidad especial', en: 'Turning off the breaker box slows it and removes its speed ability' },
+    behavior: { 'es-la': 'Si hay más de 3 metros entre él y el objetivo, y la luz está prendida, se dispara.', 'es-es': 'Si hay más de 3 metros entre él y el objetivo, y la luz está encendida, se dispara.', en: 'If 3+ meters from target with power on, it accelerates rapidly.' },
+    hint: { 'es-la': 'Apaga la electricidad — si se vuelve notablemente más lento = Djinn', 'es-es': 'Apaga la electricidad — si se vuelve notablemente más lento = Djinn', en: 'Turn off power — if it becomes noticeably slower = Jinn' },
+  },
+  {
+    id: 'mare',
+    name: { 'es-la': 'Mare', 'es-es': 'Mare', en: 'Mare' },
+    evidences: ['spirit_box', 'ghost_orb', 'ghost_writing'],
+    sanity: 60, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Caza a 60% de cordura en oscuridad y apaga luces constantemente', 'es-es': 'Caza al 60% de cordura en oscuridad y apaga luces constantemente', en: 'Hunts at 60% sanity in darkness and constantly turns off lights' },
+    weakness: { 'es-la': 'Menos probable que cace cuando hay luces encendidas (40% cordura)', 'es-es': 'Menos probable que cace cuando hay luces encendidas (40% de cordura)', en: 'Less likely to hunt when lights are on (40% sanity threshold)' },
+    behavior: { 'es-la': 'Apaga luces todo el tiempo. Muy agresivo en la oscuridad. Pacífico con luz.', 'es-es': 'Apaga luces todo el tiempo. Muy agresivo en la oscuridad. Pacífico con luz.', en: 'Turns off lights constantly. Very aggressive in darkness. Peaceful in light.' },
+    hint: { 'es-la': 'Mantén las luces encendidas. Si sigue apagándolas obsesivamente = Mare', 'es-es': 'Mantén las luces encendidas. Si sigue apagándolas de forma obsesiva = Mare', en: 'Keep lights on. If it keeps obsessively turning them off = Mare' },
+  },
+  {
+    id: 'revenant',
+    name: { 'es-la': 'Revenant', 'es-es': 'Revenant', en: 'Revenant' },
+    evidences: ['ghost_orb', 'ghost_writing', 'freezing'],
+    sanity: 50, speed: { 'es-la': '0.9 m/s sin objetivo / 3.0 m/s con objetivo', 'es-es': '0.9 m/s sin objetivo / 3.0 m/s con objetivo', en: '0.9 m/s without target / 3.0 m/s with target' },
+    strength: { 'es-la': 'Al detectar a un jugador, se mueve hasta 3x más rápido', 'es-es': 'Al detectar a un jugador, se mueve hasta 3 veces más rápido', en: 'Upon detecting a player, moves up to 3x faster' },
+    weakness: { 'es-la': 'Extremadamente lento mientras no detecta a nadie — fácil de evadir escondiéndose', 'es-es': 'Extremadamente lento mientras no detecta a nadie — fácil de evadir escondiéndose', en: 'Extremely slow when not detecting anyone — easy to evade by hiding' },
+    behavior: { 'es-la': 'Velocidad bipolar: lentísimo patrullando, rapidísimo al verte. Escóndete y no hagas ruido.', 'es-es': 'Velocidad bipolar: lentísimo patrullando, rapidísimo al verte. Escóndete y no hagas ruido.', en: 'Bipolar speed: very slow patrolling, very fast when it sees you. Hide silently.' },
+    hint: { 'es-la': 'Si viene muy lento pero de repente acelera al verte = Revenant. Escóndete rápido.', 'es-es': 'Si viene muy lento pero de repente acelera al verte = Revenant. Escóndete rápido.', en: 'Comes slowly then suddenly accelerates when it sees you = Revenant. Hide fast.' },
+  },
+  {
+    id: 'shade',
+    name: { 'es-la': 'Sombra', 'es-es': 'Sombra', en: 'Shade' },
+    evidences: ['emf5', 'ghost_writing', 'freezing'],
+    sanity: 35, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Muy difícil de provocar cuando hay jugadores cerca. Poca actividad visible.', 'es-es': 'Muy difícil de provocar cuando hay jugadores cerca. Poca actividad visible.', en: 'Very hard to provoke when players are nearby. Little visible activity.' },
+    weakness: { 'es-la': 'No puede iniciar cacería si hay jugadores en su cuarto. Caza solo a 35%.', 'es-es': 'No puede iniciar cacería si hay jugadores en su cuarto. Solo caza al 35%.', en: 'Cannot start hunt if players are in its room. Only hunts at 35% sanity.' },
+    behavior: { 'es-la': 'Muy pasivo con presencia humana. Para detectarlo, investiga solo y con paciencia.', 'es-es': 'Muy pasivo con presencia humana. Para detectarlo, investiga solo y con paciencia.', en: 'Very passive with human presence. Investigate alone and patiently to detect it.' },
+    hint: { 'es-la': 'Poca actividad aunque estés solo? Y la cordura está baja? = Sombra', 'es-es': '¿Poca actividad aunque estés solo? ¿Y la cordura está baja? = Sombra', en: 'Little activity even when alone, and sanity is very low? = Shade' },
+  },
+  {
+    id: 'demon',
+    name: { 'es-la': 'Demonio', 'es-es': 'Demonio', en: 'Demon' },
+    evidences: ['ultraviolet', 'ghost_writing', 'freezing'],
+    sanity: 70, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'El más agresivo. Puede cazar en cualquier momento ignorando la cordura.', 'es-es': 'El más agresivo. Puede cazar en cualquier momento ignorando la cordura.', en: 'Most aggressive. Can hunt at any time regardless of sanity.' },
+    weakness: { 'es-la': 'El crucifijo tiene radio de 5m contra él (en vez de 3m). Úsalo con ventaja.', 'es-es': 'El crucifijo tiene radio de 5 m contra él (en vez de 3 m). Úsalo con ventaja.', en: 'Crucifix has 5m radius against it (instead of 3m). Use this advantage.' },
+    behavior: { 'es-la': 'Caza desde 70% de cordura o incluso sin razón. Muy peligroso en niveles difíciles.', 'es-es': 'Caza desde el 70% de cordura o incluso sin razón. Muy peligroso en niveles difíciles.', en: 'Hunts from 70% sanity or even randomly. Very dangerous on hard difficulties.' },
+    hint: { 'es-la': 'Cazas muy tempranas sin que la cordura haya bajado mucho = Demonio. Lleva crucifijos.', 'es-es': 'Cacerías muy tempranas sin que la cordura haya bajado mucho = Demonio. Lleva crucifijos.', en: 'Very early hunts before sanity drops much = Demon. Carry crucifixes.' },
+  },
+  {
+    id: 'yurei',
+    name: { 'es-la': 'Yurei', 'es-es': 'Yurei', en: 'Yurei' },
+    evidences: ['ghost_orb', 'freezing', 'dots'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Drena la cordura muy rápidamente a jugadores en la misma habitación', 'es-es': 'Drena la cordura muy rápidamente a los jugadores en la misma habitación', en: 'Drains sanity very rapidly from players in the same room' },
+    weakness: { 'es-la': 'El incienso quemado en su cuarto lo atrapa allí temporalmente', 'es-es': 'El incienso quemado en su cuarto lo atrapa allí temporalmente', en: 'Smudge sticks used in its room trap it there temporarily' },
+    behavior: { 'es-la': 'Cierra puertas. Tu cordura baja rápido sin razón aparente si estás cerca.', 'es-es': 'Cierra puertas. Tu cordura baja rápido sin razón aparente si estás cerca.', en: 'Closes doors. Your sanity drops fast for no apparent reason when nearby.' },
+    hint: { 'es-la': 'La cordura cae rápidamente sin motivo obvio = Yurei. Quema incienso en su cuarto.', 'es-es': 'La cordura cae rápidamente sin motivo obvio = Yurei. Quema incienso en su cuarto.', en: 'Sanity drops rapidly for no obvious reason = Yurei. Use smudge in its room.' },
+  },
+  {
+    id: 'oni',
+    name: { 'es-la': 'Oni', 'es-es': 'Oni', en: 'Oni' },
+    evidences: ['emf5', 'freezing', 'dots'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Más activo cuando hay jugadores presentes. Lanza objetos rápido y fuerte.', 'es-es': 'Más activo cuando hay jugadores presentes. Lanza objetos rápido y fuerte.', en: 'More active when players are present. Throws objects fast and hard.' },
+    weakness: { 'es-la': 'Permanece visible por más tiempo durante eventos, facilitando fotografiarlo', 'es-es': 'Permanece visible por más tiempo durante los eventos, facilitando fotografiarlo', en: 'Stays visible longer during ghost events, making it easier to photograph' },
+    behavior: { 'es-la': 'Opuesto al Yokai: con más jugadores hay más actividad. Gran lanzador de objetos.', 'es-es': 'Opuesto al Yokai: con más jugadores hay más actividad. Gran lanzador de objetos.', en: 'Opposite of Yokai: more players = more activity. Great object thrower.' },
+    hint: { 'es-la': 'Más jugadores = más actividad y eventos = Oni. Fácil de fotografiar.', 'es-es': 'Más jugadores = más actividad y eventos = Oni. Fácil de fotografiar.', en: 'More players = more activity and events = Oni. Easy to photograph.' },
+  },
+  {
+    id: 'yokai',
+    name: { 'es-la': 'Yokai', 'es-es': 'Yokai', en: 'Yokai' },
+    evidences: ['spirit_box', 'ghost_orb', 'dots'],
+    sanity: 80, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Caza a 80% de cordura si escucha voces. Se activa más con ruido.', 'es-es': 'Caza al 80% de cordura si escucha voces. Se activa más con ruido.', en: 'Hunts at 80% sanity if it hears voices. More active with noise.' },
+    weakness: { 'es-la': 'Durante la cacería solo puede escuchar voces a muy corta distancia', 'es-es': 'Durante la cacería solo puede escuchar voces a muy corta distancia', en: 'During hunt can only hear voices from very close range' },
+    behavior: { 'es-la': 'Responde al sonido. Hablar activa más eventos. Silencio = menos actividad.', 'es-es': 'Responde al sonido. Hablar activa más eventos. Silencio = menos actividad.', en: 'Responds to sound. Talking triggers more events. Silence = less activity.' },
+    hint: { 'es-la': 'Caza con cordura alta cuando hay mucho ruido = Yokai. Habla menos.', 'es-es': 'Caza con cordura alta cuando hay mucho ruido = Yokai. Habla menos.', en: 'Hunts at high sanity when there\'s a lot of noise = Yokai. Talk less.' },
+  },
+  {
+    id: 'hantu',
+    name: { 'es-la': 'Hantu', 'es-es': 'Hantu', en: 'Hantu' },
+    evidences: ['ultraviolet', 'ghost_orb', 'freezing'],
+    sanity: 50, speed: { 'es-la': '1.4–2.7 m/s según temperatura', 'es-es': '1.4–2.7 m/s según temperatura', en: '1.4–2.7 m/s based on temperature' },
+    strength: { 'es-la': 'Más rápido en cuartos fríos (sin calefacción). Hasta 2.7 m/s en frío extremo.', 'es-es': 'Más rápido en cuartos fríos (sin calefacción). Hasta 2.7 m/s con frío extremo.', en: 'Faster in cold rooms (no heating). Up to 2.7 m/s in extreme cold.' },
+    weakness: { 'es-la': 'Más lento en habitaciones cálidas. Encender la calefacción lo frena.', 'es-es': 'Más lento en habitaciones cálidas. Encender la calefacción lo frena.', en: 'Slower in warm rooms. Turning on heating slows it down.' },
+    behavior: { 'es-la': 'Se puede ver su aliento al cazar. Velocidad varía por temperatura ambiente.', 'es-es': 'Se puede ver su aliento al cazar. La velocidad varía por la temperatura ambiente.', en: 'Visible breath during hunt. Speed varies by ambient temperature.' },
+    hint: { 'es-la': 'Más rápido donde hace más frío = Hantu. Su aliento es visible durante la cacería.', 'es-es': 'Más rápido donde hace más frío = Hantu. Su aliento es visible durante la cacería.', en: 'Faster in colder areas = Hantu. Visible breath during the hunt.' },
+  },
+  {
+    id: 'goryo',
+    name: { 'es-la': 'Goryo', 'es-es': 'Goryo', en: 'Goryo' },
+    evidences: ['emf5', 'ultraviolet', 'dots'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Los D.O.T.S. solo aparecen en cámara de video y cuando no hay nadie en el cuarto', 'es-es': 'Los D.O.T.S. solo aparecen en cámara de vídeo y cuando no hay nadie en el cuarto', en: 'D.O.T.S. only appear on video camera and only when no one is in the room' },
+    weakness: { 'es-la': 'Raramente se aleja de su cuarto favorito durante la investigación', 'es-es': 'Raramente se aleja de su cuarto favorito durante la investigación', en: 'Rarely strays from its favorite room during investigation' },
+    behavior: { 'es-la': 'Debes salir del cuarto y observar los D.O.T.S. por cámara a distancia.', 'es-es': 'Debes salir del cuarto y observar los D.O.T.S. por cámara a distancia.', en: 'You must leave the room and watch D.O.T.S. through camera from outside.' },
+    hint: { 'es-la': 'D.O.T.S. solo visibles en cámara sin nadie presente = Goryo (100% seguro)', 'es-es': 'D.O.T.S. solo visibles en cámara sin nadie presente = Goryo (100% seguro)', en: 'D.O.T.S. only visible on camera with no one present = Goryo (100% certain)' },
+  },
+  {
+    id: 'myling',
+    name: { 'es-la': 'Myling', 'es-es': 'Myling', en: 'Myling' },
+    evidences: ['emf5', 'ultraviolet', 'ghost_writing'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Muy silencioso durante la cacería — casi no se escuchan sus pasos', 'es-es': 'Muy silencioso durante la cacería — casi no se escuchan sus pasos', en: 'Very quiet during the hunt — footsteps are almost inaudible' },
+    weakness: { 'es-la': 'Produce muchos sonidos paranormales que se detectan con el micrófono parabólico', 'es-es': 'Produce muchos sonidos paranormales detectables con el micrófono parabólico', en: 'Produces many paranormal sounds detectable with the parabolic microphone' },
+    behavior: { 'es-la': 'Sin ruidos durante cacería pero muy activo en sonidos paranormales.', 'es-es': 'Sin ruidos durante cacería pero muy activo en sonidos paranormales.', en: 'Silent during hunt but very active in paranormal sounds.' },
+    hint: { 'es-la': 'No escuchas pasos en la cacería pero sí muchos ruidos con la parabólica = Myling', 'es-es': 'No escuchas pasos en la cacería pero sí muchos ruidos con la parabólica = Myling', en: 'Can\'t hear footsteps in hunt but lots of sounds on parabolic = Myling' },
+  },
+  {
+    id: 'onryo',
+    name: { 'es-la': 'Onryo', 'es-es': 'Onryo', en: 'Onryo' },
+    evidences: ['spirit_box', 'ghost_orb', 'freezing'],
+    sanity: 60, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Apagar una llama puede desencadenar una cacería inmediata aunque la cordura esté alta', 'es-es': 'Apagar una llama puede desencadenar una cacería inmediata aunque la cordura esté alta', en: 'Extinguishing a flame can trigger an immediate hunt regardless of sanity' },
+    weakness: { 'es-la': 'La presencia de fuego evita que cace. Cada vela encendida lo inhibe.', 'es-es': 'La presencia de fuego evita que cace. Cada vela encendida lo inhibe.', en: 'Presence of fire prevents it from hunting. Each lit candle inhibits it.' },
+    behavior: { 'es-la': 'Teme al fuego. Cada vela apagada acumula probabilidad de cacería instantánea.', 'es-es': 'Teme al fuego. Cada vela apagada acumula probabilidad de cacería instantánea.', en: 'Fears fire. Each extinguished candle increases chance of instant hunt.' },
+    hint: { 'es-la': 'Una vela se apaga y de inmediato caza = Onryo. Mantén velas encendidas.', 'es-es': 'Una vela se apaga y de inmediato caza = Onryo. Mantén velas encendidas.', en: 'A candle goes out and it immediately hunts = Onryo. Keep candles lit.' },
+  },
+  {
+    id: 'twins',
+    name: { 'es-la': 'Los Gemelos', 'es-es': 'Los Gemelos', en: 'The Twins' },
+    evidences: ['emf5', 'spirit_box', 'freezing'],
+    sanity: 50, speed: { 'es-la': '1.5 m/s o 1.9 m/s (dos copias con velocidades distintas)', 'es-es': '1.5 m/s o 1.9 m/s (dos copias con velocidades distintas)', en: '1.5 m/s or 1.9 m/s (two copies with different speeds)' },
+    strength: { 'es-la': 'Puede interactuar en dos lugares distintos al mismo tiempo. Una copia más rápida, otra más lenta.', 'es-es': 'Puede interactuar en dos lugares distintos al mismo tiempo. Una copia más rápida, otra más lenta.', en: 'Can interact in two different locations simultaneously. One faster copy, one slower.' },
+    weakness: { 'es-la': 'Solo una de las copias puede iniciar la cacería', 'es-es': 'Solo una de las copias puede iniciar la cacería', en: 'Only one of the copies can initiate the hunt' },
+    behavior: { 'es-la': 'Actividad en dos sitios a la vez. Al cazar: velocidad 1.5 o 1.9 m/s aleatoriamente.', 'es-es': 'Actividad en dos sitios a la vez. Al cazar: velocidad 1.5 o 1.9 m/s aleatoriamente.', en: 'Activity in two places at once. When hunting: speed is 1.5 or 1.9 m/s randomly.' },
+    hint: { 'es-la': 'Actividad simultánea en dos cuartos distintos = Los Gemelos', 'es-es': 'Actividad simultánea en dos cuartos distintos = Los Gemelos', en: 'Simultaneous activity in two different rooms = The Twins' },
+  },
+  {
+    id: 'raiju',
+    name: { 'es-la': 'Raiju', 'es-es': 'Raiju', en: 'Raiju' },
+    evidences: ['emf5', 'ghost_orb', 'dots'],
+    sanity: 65, speed: { 'es-la': '1.7 m/s normal / 2.5 m/s cerca de electrónica activa', 'es-es': '1.7 m/s normal / 2.5 m/s cerca de electrónica activa', en: '1.7 m/s normal / 2.5 m/s near active electronics' },
+    strength: { 'es-la': 'Más rápido cuando hay equipos electrónicos activos cerca. Caza a 65% con mucha electrónica.', 'es-es': 'Más rápido cuando hay equipos electrónicos activos cerca. Caza al 65% con mucha electrónica.', en: 'Faster when electronics are active nearby. Hunts at 65% with many electronics on.' },
+    weakness: { 'es-la': 'Los equipos electrónicos lo delatan: causa interferencias notables', 'es-es': 'Los equipos electrónicos lo delatan: causa interferencias notables', en: 'Electronic equipment betrays it: causes notable interference' },
+    behavior: { 'es-la': 'Apaga todo tu equipo electrónico para ver si se frena durante la cacería.', 'es-es': 'Apaga todo tu equipo electrónico para ver si se frena durante la cacería.', en: 'Turn off all your electronic equipment to see if it slows during the hunt.' },
+    hint: { 'es-la': 'Más rápido o caza antes cuando hay muchos equipos encendidos = Raiju', 'es-es': 'Más rápido o caza antes cuando hay muchos equipos encendidos = Raiju', en: 'Faster or hunts earlier when many devices are on = Raiju' },
+  },
+  {
+    id: 'obake',
+    name: { 'es-la': 'Obake', 'es-es': 'Obake', en: 'Obake' },
+    evidences: ['emf5', 'ultraviolet', 'ghost_orb'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Puede dejar huellas UV únicas de 6 dedos. Puede borrar todas las huellas UV.', 'es-es': 'Puede dejar huellas UV únicas de 6 dedos. Puede borrar todas las huellas UV.', en: 'Can leave unique 6-fingered UV prints. Can erase all UV evidence.' },
+    weakness: { 'es-la': '25% probabilidad de borrar la evidencia UV cada 90 segundos — raro en otros fantasmas', 'es-es': '25% probabilidad de borrar la evidencia UV cada 90 segundos — raro en otros fantasmas', en: '25% chance to erase UV evidence every 90 seconds — rare for other ghosts' },
+    behavior: { 'es-la': 'Sus huellas UV pueden desaparecer. Fotografia inmediatamente si ves 6 dedos.', 'es-es': 'Sus huellas UV pueden desaparecer. Fotografía inmediatamente si ves 6 dedos.', en: 'Its UV prints can disappear. Photograph immediately if you see 6 fingers.' },
+    hint: { 'es-la': 'Huellas de 6 dedos o huellas UV que desaparecen solas = Obake', 'es-es': 'Huellas de 6 dedos o huellas UV que desaparecen solas = Obake', en: '6-fingered prints or UV prints that disappear on their own = Obake' },
+  },
+  {
+    id: 'mimic',
+    name: { 'es-la': 'El Mimo', 'es-es': 'El Mimo', en: 'The Mimic' },
+    // Evidencias reales: SB, UV, TEMP + siempre genera ORBES como 4ª evidencia
+    evidences: ['spirit_box', 'ultraviolet', 'freezing'],
+    extraEvidence: ['ghost_orb'], // siempre aparecen orbes (4ª evidencia real)
+    isMimic: true,
+    sanity: 50, speed: { 'es-la': 'Variable (imita la del fantasma que copia)', 'es-es': 'Variable (imita la del fantasma que copia)', en: 'Variable (mimics whichever ghost it copies)' },
+    strength: { 'es-la': 'Copia el comportamiento, fortalezas y debilidades de cualquier otro fantasma', 'es-es': 'Copia el comportamiento, fortalezas y debilidades de cualquier otro fantasma', en: 'Copies the behavior, strengths and weaknesses of any other ghost' },
+    weakness: { 'es-la': 'SIEMPRE genera Orbes Fantasmales como evidencia adicional (4ª evidencia)', 'es-es': 'SIEMPRE genera Orbes Fantasmales como evidencia adicional (4.ª evidencia)', en: 'ALWAYS generates Ghost Orbs as additional evidence (4th evidence)' },
+    behavior: { 'es-la': 'Tiene 4 evidencias reales: sus 3 + orbes siempre. Su comportamiento cambia con el tiempo porque imita a otros fantasmas.', 'es-es': 'Tiene 4 evidencias reales: sus 3 + orbes siempre. Su comportamiento cambia con el tiempo porque imita a otros fantasmas.', en: 'Has 4 real evidences: its 3 + orbs always. Its behavior changes over time as it mimics other ghosts.' },
+    hint: { 'es-la': 'Si tiene sus 3 evidencias MÁS orbes, y el comportamiento cambia mucho = El Mimo', 'es-es': 'Si tiene sus 3 evidencias MÁS orbes, y el comportamiento cambia mucho = El Mimo', en: 'If it has its 3 evidences PLUS orbs, and behavior keeps changing = The Mimic' },
+  },
+  {
+    id: 'moroi',
+    name: { 'es-la': 'Moroi', 'es-es': 'Moroi', en: 'Moroi' },
+    evidences: ['spirit_box', 'ghost_writing', 'freezing'],
+    sanity: 50, speed: { 'es-la': '1.5–3.7 m/s (más rápido con menor cordura)', 'es-es': '1.5–3.7 m/s (más rápido con menor cordura)', en: '1.5–3.7 m/s (faster with lower sanity)' },
+    strength: { 'es-la': 'Se acelera cuanto más baja la cordura del equipo. Puede llegar a 3.7 m/s.', 'es-es': 'Se acelera cuanto más baja la cordura del equipo. Puede llegar a 3.7 m/s.', en: 'Accelerates the lower team sanity is. Can reach 3.7 m/s.' },
+    weakness: { 'es-la': 'Las pastillas de cordura son más efectivas contra él. Tómalas para frenarlo.', 'es-es': 'Las pastillas de cordura son más efectivas contra él. Tómalas para frenarlo.', en: 'Sanity pills are more effective against it. Take them to slow it down.' },
+    behavior: { 'es-la': 'A 0% de cordura se mueve muy rápido. Las pastillas de cordura lo ralentizan notablemente.', 'es-es': 'Al 0% de cordura se mueve muy rápido. Las pastillas de cordura lo ralentizan notablemente.', en: 'At 0% sanity it moves very fast. Sanity pills noticeably slow it down.' },
+    hint: { 'es-la': 'Se vuelve más rápido conforme baja la cordura = Moroi. Toma pastillas de cordura.', 'es-es': 'Se vuelve más rápido conforme baja la cordura = Moroi. Toma pastillas de cordura.', en: 'Speeds up as sanity drops = Moroi. Take sanity pills to slow it.' },
+  },
+  {
+    id: 'deogen',
+    name: { 'es-la': 'Deogen', 'es-es': 'Deogen', en: 'Deogen' },
+    evidences: ['spirit_box', 'ghost_writing', 'dots'],
+    sanity: 40, speed: { 'es-la': '3.0 m/s lejos / 0.4 m/s muy cerca del objetivo', 'es-es': '3.0 m/s lejos / 0.4 m/s muy cerca del objetivo', en: '3.0 m/s far away / 0.4 m/s very close to target' },
+    strength: { 'es-la': 'Siempre sabe exactamente donde estás. Esconderse no sirve de nada.', 'es-es': 'Siempre sabe exactamente dónde estás. Esconderse no sirve de nada.', en: 'Always knows exactly where you are. Hiding is completely useless.' },
+    weakness: { 'es-la': 'Se vuelve extremadamente lento (0.4 m/s) cuando está muy cerca — puedes esquivarlo girando.', 'es-es': 'Se vuelve extremadamente lento (0.4 m/s) cuando está muy cerca — puedes esquivarlo girando.', en: 'Becomes extremely slow (0.4 m/s) when very close — you can dodge it by circling.' },
+    behavior: { 'es-la': 'Imposible engañar escondiéndose. Pero al llegar cerca hace sonido de jadeo/resoplido fuerte.', 'es-es': 'Imposible engañar escondiéndose. Pero al llegar cerca hace sonido de jadeo/resoplido fuerte.', en: 'Impossible to trick by hiding. Makes loud heavy breathing/panting sound when close.' },
+    hint: { 'es-la': 'Se ralentiza enormemente justo antes de alcanzarte + resoplidos = Deogen. Gira en círculos.', 'es-es': 'Se ralentiza enormemente justo antes de alcanzarte + resoplidos = Deogen. Gira en círculos.', en: 'Slows massively right before reaching you + heavy breathing = Deogen. Circle around it.' },
+  },
+  {
+    id: 'thaye',
+    name: { 'es-la': 'Thaye', 'es-es': 'Thaye', en: 'Thaye' },
+    evidences: ['ghost_orb', 'ghost_writing', 'dots'],
+    sanity: 75, speed: { 'es-la': '2.75 m/s al inicio → 1.0 m/s con el tiempo', 'es-es': '2.75 m/s al inicio → 1.0 m/s con el tiempo', en: '2.75 m/s initially → 1.0 m/s over time' },
+    strength: { 'es-la': 'Muy agresivo, activo y rápido cuando los investigadores llegan por primera vez', 'es-es': 'Muy agresivo, activo y rápido cuando los investigadores llegan por primera vez', en: 'Very aggressive, active and fast when investigators first arrive' },
+    weakness: { 'es-la': 'Se vuelve menos activo, más lento y menos agresivo con el tiempo. Envejece.', 'es-es': 'Se vuelve menos activo, más lento y menos agresivo con el tiempo. Envejece.', en: 'Becomes less active, slower and less aggressive over time. It ages.' },
+    behavior: { 'es-la': 'Al inicio caza a 75% de cordura, al final solo a 15%. La ouija puede revelar su edad.', 'es-es': 'Al inicio caza al 75% de cordura, al final solo al 15%. La ouija puede revelar su edad.', en: 'Initially hunts at 75% sanity, eventually only at 15%. Ouija can reveal its age.' },
+    hint: { 'es-la': 'Muy agresivo al principio pero se calma mucho con el tiempo = Thaye', 'es-es': 'Muy agresivo al principio pero se calma mucho con el tiempo = Thaye', en: 'Very aggressive at start but calms down significantly over time = Thaye' },
+  },
+];
+
+// ============================================================
+// CURSED OBJECTS — 6 objetos malditos
+// ============================================================
+const CURSED_OBJECTS = [
+  {
+    id: 'ouija', icon: '🪬', color: '#9B59B6',
+    name: { 'es-la': 'Tabla Ouija', 'es-es': 'Tabla Ouija', en: 'Ouija Board' },
+    sub: { 'es-la': 'Objeto de comunicación', 'es-es': 'Objeto de comunicación', en: 'Communication object' },
+    use: { 'es-la': 'Actívala para hacerle preguntas al fantasma. Puedes preguntar su ubicación, edad, cuarto y cuántas personas hay. Cada respuesta drena cordura (5-20%). Decir "goodbye" la desactiva sin penalización. Si se rompe la conexión, inicia cacería.', 'es-es': 'Actívala para hacerle preguntas al fantasma. Puedes preguntar su ubicación, edad, cuarto y cuántas personas hay. Cada respuesta drena cordura (5-20%). Decir "goodbye" la desactiva sin penalización. Si se rompe la conexión, inicia cacería.', en: 'Activate it to ask the ghost questions. You can ask its location, age, room, and how many people are there. Each answer drains sanity (5-20%). Saying "goodbye" deactivates it safely. If the connection breaks, it triggers a hunt.' },
+    tips: { 'es-la': 'Preguntas útiles: "¿Dónde estás?", "¿Cuántos años tienes?", "¿Cuántas personas hay?". Di "goodbye" al terminar.', 'es-es': 'Preguntas útiles: "¿Dónde estás?", "¿Cuántos años tienes?", "¿Cuántas personas hay?". Di "goodbye" al terminar.', en: 'Useful questions: "Where are you?", "How old are you?", "How many are in this room?". Say "goodbye" when done.' },
+    danger: { 'es-la': 'No hacer preguntas inútiles — cada respuesta drena cordura. Si la cordura llega a 0% puede cazar.', 'es-es': 'No hagas preguntas inútiles — cada respuesta drena cordura. Si la cordura llega al 0% puede cazar.', en: 'Don\'t ask useless questions — each answer drains sanity. If sanity hits 0% it may hunt.' },
+  },
+  {
+    id: 'music_box', icon: '🎵', color: '#E74C3C',
+    name: { 'es-la': 'Caja de Música', 'es-es': 'Caja de Música', en: 'Music Box' },
+    sub: { 'es-la': 'Trampa de localización', 'es-es': 'Trampa de localización', en: 'Location trap' },
+    use: { 'es-la': 'Actívala y el fantasma cantará y se moverá hacia ella. Revela su ubicación exacta. Si el fantasma toca la caja, inicia cacería. Si la llevas encima mientras el fantasma se acerca, también puede cazar.', 'es-es': 'Actívala y el fantasma cantará y se moverá hacia ella. Revela su ubicación exacta. Si el fantasma toca la caja, inicia cacería. Si la llevas encima mientras el fantasma se acerca, también puede cazar.', en: 'Activate it and the ghost will sing and move toward it. Reveals its exact location. If the ghost touches the box, it triggers a hunt. Carrying it while ghost approaches can also trigger a hunt.' },
+    tips: { 'es-la': 'Colócala en el suelo y aléjate. Escucha hacia dónde se dirige el fantasma cantando.', 'es-es': 'Colócala en el suelo y aléjate. Escucha hacia dónde se dirige el fantasma cantando.', en: 'Place it on the floor and step back. Listen to where the ghost moves while singing.' },
+    danger: { 'es-la': 'Nunca la cargues cerca del fantasma. Ponla en el suelo y mantén distancia.', 'es-es': 'Nunca la cargues cerca del fantasma. Ponla en el suelo y mantén distancia.', en: 'Never carry it near the ghost. Place it on the floor and keep distance.' },
+  },
+  {
+    id: 'voodoo', icon: '🪆', color: '#FF6B35',
+    name: { 'es-la': 'Muñeco Vudú', 'es-es': 'Muñeco Vudú', en: 'Voodoo Doll' },
+    sub: { 'es-la': 'Objeto de interacción forzada', 'es-es': 'Objeto de interacción forzada', en: 'Forced interaction object' },
+    use: { 'es-la': 'Interactúa con él para pinchar uno de sus 10 alfileres. Cada alfiler activa una interacción del fantasma (EMF, tirar objetos, etc.) y drena 5% de cordura. El último alfiler (corazón) siempre inicia cacería.', 'es-es': 'Interactúa con él para pinchar uno de sus 10 alfileres. Cada alfiler activa una interacción del fantasma (EMF, tirar objetos, etc.) y drena un 5% de cordura. El último alfiler (corazón) siempre inicia cacería.', en: 'Interact with it to push one of its 10 pins. Each pin triggers a ghost interaction (EMF, throwing objects, etc.) and drains 5% sanity. The last pin (heart) always triggers a hunt.' },
+    tips: { 'es-la': 'Úsalo para provocar evidencias rápidamente. Para cuando quede el último alfiler.', 'es-es': 'Úsalo para provocar evidencias rápidamente. Para cuando quede el último alfiler.', en: 'Use it to quickly trigger evidence. Stop when only the last pin remains.' },
+    danger: { 'es-la': 'El último alfiler = cacería garantizada. Mantén la cordura alta antes de usarlo.', 'es-es': 'El último alfiler = cacería garantizada. Mantén la cordura alta antes de usarlo.', en: 'Last pin = guaranteed hunt. Keep sanity high before using it.' },
+  },
+  {
+    id: 'summoning_circle', icon: '⭕', color: '#FF4444',
+    name: { 'es-la': 'Círculo de Invocación', 'es-es': 'Círculo de Invocación', en: 'Summoning Circle' },
+    sub: { 'es-la': 'Invocación directa', 'es-es': 'Invocación directa', en: 'Direct summoning' },
+    use: { 'es-la': 'Enciende las 5 velas del círculo y el fantasma será invocado al centro. Tienes unos segundos para fotografiarlo. Inmediatamente después SIEMPRE inicia una cacería. Drena 16% de cordura por vela encendida.', 'es-es': 'Enciende las 5 velas del círculo y el fantasma será invocado al centro. Tienes unos segundos para fotografiarlo. Inmediatamente después SIEMPRE inicia una cacería. Drena un 16% de cordura por vela encendida.', en: 'Light all 5 candles and the ghost is summoned to the center. You have a few seconds to photograph it. A hunt ALWAYS immediately follows. Drains 16% sanity per candle lit.' },
+    tips: { 'es-la': 'Enciende solo 1-4 velas para actividad sin invocar. Si enciendes las 5, prepárate para correr.', 'es-es': 'Enciende solo 1-4 velas para actividad sin invocar. Si enciendes las 5, prepárate para correr.', en: 'Light only 1-4 candles for activity without summoning. If you light all 5, be ready to run.' },
+    danger: { 'es-la': '5 velas = cacería garantizada 100%. Ten un plan de escape antes de encender la quinta.', 'es-es': '5 velas = cacería garantizada 100%. Ten un plan de escape antes de encender la quinta.', en: '5 candles = 100% guaranteed hunt. Have an escape plan before lighting the fifth.' },
+  },
+  {
+    id: 'haunted_mirror', icon: '🪞', color: '#00D4FF',
+    name: { 'es-la': 'Espejo Embrujado', 'es-es': 'Espejo Embrujado', en: 'Haunted Mirror' },
+    sub: { 'es-la': 'Revelador de habitación', 'es-es': 'Revelador de habitación', en: 'Room revealer' },
+    use: { 'es-la': 'Sostenlo para ver la habitación favorita del fantasma. Drena 7.5% de cordura por segundo mientras lo miras. Úsalo en ráfagas cortas para no quedarte sin cordura. Si la cordura llega a 0%, inicia cacería.', 'es-es': 'Sostenlo para ver la habitación favorita del fantasma. Drena un 7.5% de cordura por segundo mientras lo miras. Úsalo en ráfagas cortas para no quedarte sin cordura. Si la cordura llega al 0%, inicia cacería.', en: 'Hold it to see the ghost\'s favorite room. Drains 7.5% sanity per second while looking. Use in short bursts to avoid running out of sanity. If sanity hits 0%, it triggers a hunt.' },
+    tips: { 'es-la': 'Míralos en ráfagas de 1-2 segundos. Suficiente para ver el cuarto. No lo sostengas mucho.', 'es-es': 'Míralo en ráfagas de 1-2 segundos. Suficiente para ver el cuarto. No lo sostengas mucho.', en: 'Look in 1-2 second bursts. Enough to see the room. Don\'t hold it for long.' },
+    danger: { 'es-la': '7.5% de cordura por segundo = muy rápido. Úsalo solo al inicio cuando la cordura está alta.', 'es-es': '7.5% de cordura por segundo = muy rápido. Úsalo solo al inicio cuando la cordura está alta.', en: '7.5% sanity per second = very fast. Use it only early on when sanity is high.' },
+  },
+  {
+    id: 'tarot', icon: '🃏', color: '#FFD700',
+    name: { 'es-la': 'Cartas del Tarot', 'es-es': 'Cartas del Tarot', en: 'Tarot Cards' },
+    sub: { 'es-la': 'Efectos aleatorios', 'es-es': 'Efectos aleatorios', en: 'Random effects' },
+    use: { 'es-la': 'Activa una carta para un efecto aleatorio. Cartas posibles: La Torre (activa evento), La Luna (baja cordura a 0%), El Sol (sube cordura a 100%), El Diablo (inicia cacería), La Muerte (apaga luces), La Llama (quema al jugador si está cerca del fantasma), El Colgado (teleporta al cuarto del fantasma), La Sacerdotisa (revive a un jugador muerto), La Rueda (efecto aleatorio adicional), El Ermitaño (atrapa al fantasma en su cuarto).', 'es-es': 'Activa una carta para un efecto aleatorio. Cartas posibles: La Torre (activa evento), La Luna (baja cordura al 0%), El Sol (sube cordura al 100%), El Diablo (inicia cacería), La Muerte (apaga luces), La Llama (quema al jugador si está cerca del fantasma), El Colgado (teletransporta al cuarto del fantasma), La Sacerdotisa (revive a un jugador muerto), La Rueda (efecto aleatorio adicional), El Ermitaño (atrapa al fantasma en su cuarto).', en: 'Draw a card for a random effect. Possible cards: The Tower (triggers event), The Moon (drops sanity to 0%), The Sun (raises sanity to 100%), The Devil (starts hunt), Death (turns off lights), The Flames (burns player if near ghost), The Hanged Man (teleports to ghost room), The High Priestess (revives dead player), Wheel of Fortune (additional random effect), The Hermit (traps ghost in its room).' },
+    tips: { 'es-la': 'Las cartas son totalmente aleatorias. La Sacerdotisa es la más útil pues revive compañeros.', 'es-es': 'Las cartas son totalmente aleatorias. La Sacerdotisa es la más útil pues revive a compañeros.', en: 'Cards are completely random. The High Priestess is the most useful as it revives teammates.' },
+    danger: { 'es-la': 'El Diablo y La Luna son las más peligrosas. Usa las cartas solo si necesitas desesperadamente algo.', 'es-es': 'El Diablo y La Luna son las más peligrosas. Usa las cartas solo si necesitas desesperadamente algo.', en: 'The Devil and The Moon are the most dangerous. Only use cards if you desperately need something.' },
+  },
+];
+
+// ============================================================
+// EVIDENCE GUIDE — cómo encontrar cada evidencia
+// ============================================================
+const EVIDENCE_GUIDE = {
+  emf5: {
+    steps: {
+      'es-la': [
+        { text: 'Lleva el <strong>Lector EMF</strong> al cuarto del fantasma.' },
+        { text: 'Acércate a objetos que el fantasma haya movido o interactuado.' },
+        { text: 'Observa las luces del EMF. <em>Nivel 5 = todas las luces rojas</em> encendidas brevemente.' },
+        { text: 'También puede activarse en el punto exacto donde estaba el fantasma.' },
+      ],
+      'es-es': [
+        { text: 'Lleva el <strong>Lector EMF</strong> al cuarto del fantasma.' },
+        { text: 'Acércate a objetos que el fantasma haya movido o con los que haya interactuado.' },
+        { text: 'Observa las luces del EMF. <em>Nivel 5 = todas las luces rojas</em> encendidas brevemente.' },
+        { text: 'También puede activarse en el punto exacto donde estaba el fantasma.' },
+      ],
+      en: [
+        { text: 'Bring the <strong>EMF Reader</strong> to the ghost\'s room.' },
+        { text: 'Approach objects the ghost has moved or interacted with.' },
+        { text: 'Watch the EMF lights. <em>Level 5 = all red lights</em> briefly lit.' },
+        { text: 'Can also activate at the exact spot where the ghost was standing.' },
+      ],
+    },
+    tip: { 'es-la': 'El EMF5 es poco frecuente. Quédate en el cuarto y sé paciente. Puede tardar varios minutos.', 'es-es': 'El EMF5 es poco frecuente. Quédate en el cuarto y sé paciente. Puede tardar varios minutos.', en: 'EMF5 is infrequent. Stay in the room and be patient. It can take several minutes.' },
+    warning: { 'es-la': 'Nivel 2 = interacción normal. Nivel 5 = la evidencia real. No los confundas.', 'es-es': 'Nivel 2 = interacción normal. Nivel 5 = la evidencia real. No los confundas.', en: 'Level 2 = normal interaction. Level 5 = the actual evidence. Don\'t confuse them.' },
+  },
+  spirit_box: {
+    steps: {
+      'es-la': [
+        { text: '<strong>Apaga todas las luces</strong> del cuarto — requisito obligatorio.' },
+        { text: 'Enciende la <strong>Caja del Espíritu</strong> y espera que escanee frecuencias.' },
+        { text: 'Pregunta en voz alta cosas como: <em>"¿Estás aquí?", "¿Cuántos años tienes?", "¿Dónde estás?"</em>' },
+        { text: 'Una voz distorsionada clara como respuesta confirma la evidencia.' },
+      ],
+      'es-es': [
+        { text: '<strong>Apaga todas las luces</strong> del cuarto — requisito obligatorio.' },
+        { text: 'Enciende la <strong>Caja del Espíritu</strong> y espera a que escanee frecuencias.' },
+        { text: 'Pregunta en voz alta cosas como: <em>"¿Estás aquí?", "¿Cuántos años tienes?", "¿Dónde estás?"</em>' },
+        { text: 'Una voz distorsionada clara como respuesta confirma la evidencia.' },
+      ],
+      en: [
+        { text: '<strong>Turn off all lights</strong> in the room — mandatory requirement.' },
+        { text: 'Turn on the <strong>Spirit Box</strong> and wait for it to scan frequencies.' },
+        { text: 'Ask aloud things like: <em>"Are you here?", "How old are you?", "Where are you?"</em>' },
+        { text: 'A clear distorted voice as response confirms the evidence.' },
+      ],
+    },
+    tip: { 'es-la': 'Algunos fantasmas solo responden si estás solo. Pide a los demás que salgan del cuarto.', 'es-es': 'Algunos fantasmas solo responden si estás solo. Pide a los demás que salgan del cuarto.', en: 'Some ghosts only respond when you\'re alone. Have others leave the room.' },
+    warning: { 'es-la': 'Ruido estático o interferencia ≠ respuesta. Necesitas escuchar una voz reconocible.', 'es-es': 'Ruido estático o interferencia ≠ respuesta. Necesitas escuchar una voz reconocible.', en: 'Static noise or interference ≠ response. You need to hear a recognizable voice.' },
+  },
+  ultraviolet: {
+    steps: {
+      'es-la': [
+        { text: 'Toma la <strong>Linterna UV</strong> o coloca <strong>Bastones de luz UV</strong> en el cuarto.' },
+        { text: 'Busca en puertas, ventanas, paredes y superficies que el fantasma haya tocado.' },
+        { text: 'Las huellas de manos brillarán en <em>morado/verde fluorescente</em> bajo la UV.' },
+        { text: 'También revisa el suelo si pusiste sal — el fantasma puede dejar pisadas.' },
+      ],
+      'es-es': [
+        { text: 'Toma la <strong>Linterna UV</strong> o coloca <strong>Bastones de luz UV</strong> en el cuarto.' },
+        { text: 'Busca en puertas, ventanas, paredes y superficies que el fantasma haya tocado.' },
+        { text: 'Las huellas de manos brillarán en <em>morado/verde fluorescente</em> bajo la UV.' },
+        { text: 'También revisa el suelo si pusiste sal — el fantasma puede dejar pisadas.' },
+      ],
+      en: [
+        { text: 'Take the <strong>UV Flashlight</strong> or place <strong>UV Glow Sticks</strong> in the room.' },
+        { text: 'Search doors, windows, walls and surfaces the ghost may have touched.' },
+        { text: 'Handprints will glow <em>purple/fluorescent green</em> under UV.' },
+        { text: 'Also check the floor if you placed salt — the ghost may leave footprints.' },
+      ],
+    },
+    tip: { 'es-la': 'Pon sal en la entrada del cuarto. Si el fantasma la pisa, deja huellas UV visibles en el suelo.', 'es-es': 'Pon sal en la entrada del cuarto. Si el fantasma la pisa, deja huellas UV visibles en el suelo.', en: 'Place salt at the room entrance. If the ghost steps in it, it leaves visible UV footprints on the floor.' },
+    warning: { 'es-la': 'Las huellas desaparecen con el tiempo. Fotografíalas inmediatamente cuando aparezcan.', 'es-es': 'Las huellas desaparecen con el tiempo. Fotografíalas inmediatamente cuando aparezcan.', en: 'Prints disappear over time. Photograph them immediately when they appear.' },
+  },
+  ghost_orb: {
+    steps: {
+      'es-la': [
+        { text: 'Coloca una <strong>Cámara de Video</strong> en el cuarto del fantasma apuntando al interior.' },
+        { text: 'Ve al monitor del camión y observa el feed de video en <em>modo visión nocturna</em>.' },
+        { text: 'Un <strong>pequeño orbe brillante</strong> moviéndose por el cuarto confirma la evidencia.' },
+        { text: 'También puedes verlos con cámara manual en modo nocturno dentro del cuarto.' },
+      ],
+      'es-es': [
+        { text: 'Coloca una <strong>Cámara de Vídeo</strong> en el cuarto del fantasma apuntando al interior.' },
+        { text: 'Ve al monitor del camión y observa el feed de vídeo en <em>modo visión nocturna</em>.' },
+        { text: 'Un <strong>pequeño orbe brillante</strong> moviéndose por el cuarto confirma la evidencia.' },
+        { text: 'También puedes verlos con cámara manual en modo nocturno dentro del cuarto.' },
+      ],
+      en: [
+        { text: 'Place a <strong>Video Camera</strong> in the ghost\'s room pointing inward.' },
+        { text: 'Go to the truck monitor and watch the video feed in <em>night vision mode</em>.' },
+        { text: 'A <strong>small glowing orb</strong> moving around the room confirms evidence.' },
+        { text: 'You can also see them with a handheld camera in night vision inside the room.' },
+      ],
+    },
+    tip: { 'es-la': 'Los orbes son pequeños y se mueven. Observa la pantalla con paciencia. Pueden estar en cualquier parte del cuarto.', 'es-es': 'Los orbes son pequeños y se mueven. Observa la pantalla con paciencia. Pueden estar en cualquier parte del cuarto.', en: 'Orbs are small and move. Watch the screen patiently. They can be anywhere in the room.' },
+    warning: { 'es-la': 'Las motas de polvo NO son orbes. Los orbes tienen brillo constante y movimiento suave con propósito.', 'es-es': 'Las motas de polvo NO son orbes. Los orbes tienen brillo constante y movimiento suave con propósito.', en: 'Dust particles are NOT orbs. Real orbs have consistent glow and smooth purposeful movement.' },
+  },
+  ghost_writing: {
+    steps: {
+      'es-la': [
+        { text: 'Coloca el <strong>Libro de Escritura Fantasmal</strong> en el cuarto del fantasma.' },
+        { text: 'Déjalo en el suelo o en una superficie plana y espera.' },
+        { text: 'El fantasma escribirá <em>símbolos o texto</em> en el libro si tiene esta evidencia.' },
+        { text: 'Revísalo periódicamente — puede aparecer en cualquier momento.' },
+      ],
+      'es-es': [
+        { text: 'Coloca el <strong>Libro de Escritura Fantasmal</strong> en el cuarto del fantasma.' },
+        { text: 'Déjalo en el suelo o en una superficie plana y espera.' },
+        { text: 'El fantasma escribirá <em>símbolos o texto</em> en el libro si tiene esta evidencia.' },
+        { text: 'Revísalo periódicamente — puede aparecer en cualquier momento.' },
+      ],
+      en: [
+        { text: 'Place the <strong>Ghost Writing Book</strong> in the ghost\'s room.' },
+        { text: 'Leave it on the floor or a flat surface and wait.' },
+        { text: 'The ghost will write <em>symbols or text</em> in the book if it has this evidence.' },
+        { text: 'Check it periodically — it can appear at any time.' },
+      ],
+    },
+    tip: { 'es-la': 'Pon el libro directamente dentro del cuarto del fantasma, no en el pasillo. Más cerca = más probable.', 'es-es': 'Pon el libro directamente dentro del cuarto del fantasma, no en el pasillo. Más cerca = más probable.', en: 'Place the book directly inside the ghost\'s room, not in the hallway. Closer = more likely.' },
+    warning: { 'es-la': 'No muevas el libro seguido. Dale tiempo al fantasma. Puede tardar varios minutos en escribir.', 'es-es': 'No muevas el libro seguido. Dale tiempo al fantasma. Puede tardar varios minutos en escribir.', en: 'Don\'t keep moving the book. Give the ghost time. It can take several minutes to write.' },
+  },
+  freezing: {
+    steps: {
+      'es-la': [
+        { text: 'Lleva el <strong>Termómetro</strong> al cuarto del fantasma.' },
+        { text: 'Apunta a diferentes partes del cuarto y espera la lectura (toma ~1 segundo).' },
+        { text: '<em>Por debajo de 0°C (32°F)</em> es evidencia de temperatura de congelación.' },
+        { text: 'La temperatura baja gradualmente — espera 2-3 minutos después de entrar.' },
+      ],
+      'es-es': [
+        { text: 'Lleva el <strong>Termómetro</strong> al cuarto del fantasma.' },
+        { text: 'Apunta a diferentes partes del cuarto y espera la lectura (tarda ~1 segundo).' },
+        { text: '<em>Por debajo de 0°C (32°F)</em> es evidencia de temperatura de congelación.' },
+        { text: 'La temperatura baja gradualmente — espera 2-3 minutos después de entrar.' },
+      ],
+      en: [
+        { text: 'Bring the <strong>Thermometer</strong> to the ghost\'s room.' },
+        { text: 'Point to different parts of the room and wait for a reading (~1 second).' },
+        { text: '<em>Below 0°C (32°F)</em> is evidence of freezing temperatures.' },
+        { text: 'Temperature drops gradually — wait 2-3 minutes after entering.' },
+      ],
+    },
+    tip: { 'es-la': 'Si hace suficiente frío, puedes VER tu aliento incluso sin termómetro. Un indicador visual útil.', 'es-es': 'Si hace suficiente frío, puedes VER tu aliento incluso sin termómetro. Un indicador visual útil.', en: 'If it\'s cold enough, you can SEE your breath even without a thermometer. A useful visual indicator.' },
+    warning: { 'es-la': 'La temperatura baja lentamente. No te vayas después de una sola lectura. Dale tiempo.', 'es-es': 'La temperatura baja lentamente. No te vayas después de una sola lectura. Dale tiempo.', en: 'Temperature drops slowly. Don\'t leave after a single reading. Give it time.' },
+  },
+  dots: {
+    steps: {
+      'es-la': [
+        { text: 'Coloca el <strong>Proyector D.O.T.S.</strong> en el cuarto del fantasma.' },
+        { text: 'El proyector emite una cuadrícula de puntos verdes sobre el suelo y paredes.' },
+        { text: 'Si el fantasma camina por los puntos, verás su <em>silueta verde semitransparente</em> moverse.' },
+        { text: '<strong>Goryo especial:</strong> sal del cuarto y observa con cámara de video — solo aparece en cámara.' },
+      ],
+      'es-es': [
+        { text: 'Coloca el <strong>Proyector D.O.T.S.</strong> en el cuarto del fantasma.' },
+        { text: 'El proyector emite una cuadrícula de puntos verdes sobre el suelo y paredes.' },
+        { text: 'Si el fantasma camina por los puntos, verás su <em>silueta verde semitransparente</em> moverse.' },
+        { text: '<strong>Goryo especial:</strong> sal del cuarto y observa con cámara de vídeo — solo aparece en cámara.' },
+      ],
+      en: [
+        { text: 'Place the <strong>D.O.T.S. Projector</strong> in the ghost\'s room.' },
+        { text: 'The projector emits a green dot grid over the floor and walls.' },
+        { text: 'If the ghost walks through the dots, you\'ll see its <em>semi-transparent green silhouette</em> move.' },
+        { text: '<strong>Goryo special:</strong> leave the room and watch via video camera — only appears on camera.' },
+      ],
+    },
+    tip: { 'es-la': 'Apaga todas las luces y quédate completamente quieto. La silueta es muy sutil y fácil de perder.', 'es-es': 'Apaga todas las luces y quédate completamente quieto. La silueta es muy sutil y fácil de perder.', en: 'Turn off all lights and stay completely still. The silhouette is very subtle and easy to miss.' },
+    warning: { 'es-la': 'El Goryo SOLO muestra D.O.T.S. en cámara y SOLO cuando no hay nadie en el cuarto. Sal y mira la pantalla.', 'es-es': 'El Goryo SOLO muestra D.O.T.S. en cámara y SOLO cuando no hay nadie en el cuarto. Sal y mira la pantalla.', en: 'Goryo ONLY shows D.O.T.S. on camera and ONLY when no one is in the room. Leave and watch the screen.' },
+  },
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentLang = 'es-la';
+let evidenceStates = {};
+EVIDENCES.forEach(e => evidenceStates[e.id] = 'none');
+let selectedGhostId = null;
+let activeTab = 'how-to';
+
+// ============================================================
+// LANG
+// ============================================================
+function t(key) { return LANGS[currentLang]?.[key] || LANGS['es-la'][key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  applyStaticLang();
+  renderAll();
+}
+
+function applyStaticLang() {
+  const L = LANGS[currentLang];
+  document.getElementById('header-subtitle').textContent = L.subtitle;
+  document.getElementById('btn-reset').textContent = L.reset;
+  document.getElementById('lbl-evidences').textContent = L.evidences;
+  document.getElementById('lbl-confirmed').textContent = L.confirmed;
+  document.getElementById('lbl-ruled').textContent = L.ruled;
+  document.getElementById('lbl-click-hint').textContent = L['click-hint'];
+  document.getElementById('lbl-ghosts').textContent = L.ghosts;
+  document.getElementById('lbl-stat-possible').textContent = L['stat-possible'];
+  document.getElementById('lbl-stat-ev').textContent = L['stat-ev'];
+  document.getElementById('lbl-stat-elim').textContent = L['stat-elim'];
+  document.getElementById('lbl-guide').textContent = L.guide;
+  document.getElementById('lbl-back').textContent = L.back;
+  document.getElementById('tab-btn-how-to').textContent = L['tab-how-to'];
+  document.getElementById('tab-btn-cursed').textContent = L['tab-cursed'];
+  document.getElementById('tab-btn-tips').textContent = L['tab-tips'];
+}
+
+// ============================================================
+// PARTICLES
+// ============================================================
+function initParticles() {
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (8 + Math.random() * 14) + 's';
+    p.style.animationDelay = (-Math.random() * 20) + 's';
+    const size = (1 + Math.random() * 2.5) + 'px';
+    p.style.width = p.style.height = size;
+    if (Math.random() > 0.65) p.style.background = '#9B59B6';
+    c.appendChild(p);
+  }
+}
+
+// ============================================================
+// EVIDENCE IMPOSSIBILITY CHECK
+// ============================================================
+function isEvidenceImpossible(evId) {
+  const confirmed = Object.entries(evidenceStates).filter(([,v]) => v === 'confirmed').map(([k]) => k);
+  const ruledOut = Object.entries(evidenceStates).filter(([,v]) => v === 'ruled-out').map(([k]) => k);
+  if (confirmed.includes(evId) || ruledOut.includes(evId)) return false;
+  const testConfirmed = [...confirmed, evId];
+  const possible = GHOSTS.filter(g => {
+    const allEvs = [...g.evidences, ...(g.extraEvidence || [])];
+    return testConfirmed.every(e => allEvs.includes(e)) && !ruledOut.some(e => g.evidences.includes(e));
+  });
+  return possible.length === 0;
+}
+
+function cycleEvidence(id) {
+  const cur = evidenceStates[id];
+  evidenceStates[id] = cur === 'none' ? 'confirmed' : cur === 'confirmed' ? 'ruled-out' : 'none';
+  renderAll();
+}
+
+// ============================================================
+// RENDER EVIDENCES
+// ============================================================
+function renderEvidences() {
+  const grid = document.getElementById('evidence-grid');
+  grid.innerHTML = '';
+  EVIDENCES.forEach(ev => {
+    const state = evidenceStates[ev.id];
+    const impossible = isEvidenceImpossible(ev.id);
+    const div = document.createElement('div');
+    div.className = `evidence-card${state === 'confirmed' ? ' confirmed' : state === 'ruled-out' ? ' ruled-out' : ''}${impossible && state === 'none' ? ' impossible' : ''}`;
+    div.onclick = () => cycleEvidence(ev.id);
+    const icon = state === 'confirmed' ? 'fa-check' : state === 'ruled-out' ? 'fa-times' : 'fa-circle';
+    div.innerHTML = `
+      <div class="ev-icon" style="color:${ev.color}">${ev.icon}</div>
+      <div class="ev-info">
+        <div class="ev-name">${ev.name[currentLang]}</div>
+        <div class="ev-sub">${ev.abbr}</div>
+      </div>
+      <div class="ev-state"><i class="fas ${icon}" style="font-size:8px"></i></div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// ============================================================
+// CALC POSSIBLE GHOSTS
+// Key: El Mimo siempre incluye orbes como evidencia adicional.
+// Si orbes están confirmados, El Mimo debe aparecer como posible.
+// Si orbes están DESCARTADOS, El Mimo NO es posible (porque siempre tiene orbes).
+// ============================================================
+function calcGhosts() {
+  const confirmed = Object.entries(evidenceStates).filter(([,v]) => v === 'confirmed').map(([k]) => k);
+  const ruledOut = Object.entries(evidenceStates).filter(([,v]) => v === 'ruled-out').map(([k]) => k);
+
+  return GHOSTS.map(g => {
+    const allEvs = [...g.evidences, ...(g.extraEvidence || [])];
+    // Confirmed evidences must all be in the ghost's evidence pool
+    const hasAllConfirmed = confirmed.every(e => allEvs.includes(e));
+    // Ruled-out evidences: for Mimic, check base evidences AND extra (orbs)
+    const hasRuledOut = ruledOut.some(e => allEvs.includes(e));
+    const possible = hasAllConfirmed && !hasRuledOut;
+
+    const matchCount = confirmed.filter(e => allEvs.includes(e)).length;
+    const probability = possible ? (confirmed.length === 0 ? 1/GHOSTS.length : matchCount / Math.max(g.evidences.length, 1)) : 0;
+
+    return { ...g, possible, probability, matchCount, _confirmed: confirmed, _ruledOut: ruledOut };
+  }).sort((a,b) => b.probability - a.probability);
+}
+
+// ============================================================
+// RENDER GHOSTS
+// ============================================================
+function renderGhosts() {
+  const results = calcGhosts();
+  const possible = results.filter(g => g.possible);
+  const eliminated = results.filter(g => !g.possible);
+  const confirmedCount = Object.values(evidenceStates).filter(v => v === 'confirmed').length;
+  const ruledCount = Object.values(evidenceStates).filter(v => v === 'ruled-out').length;
+
+  document.getElementById('stat-possible').textContent = possible.length;
+  document.getElementById('stat-possible').className = `stat-num${possible.length === 0 ? ' zero' : ''}`;
+  document.getElementById('stat-ev').textContent = confirmedCount;
+  document.getElementById('stat-elim').textContent = eliminated.length;
+
+  const fs = document.getElementById('filter-status');
+  if (confirmedCount > 0 || ruledCount > 0) {
+    fs.style.display = 'flex'; fs.className = 'filter-status filter-active';
+    const names = Object.entries(evidenceStates).filter(([,v]) => v !== 'none').map(([k]) => {
+      const ev = EVIDENCES.find(e => e.id === k);
+      return (ev?.abbr || k) + (evidenceStates[k] === 'ruled-out' ? '✗' : '✓');
+    });
+    document.getElementById('filter-text').textContent = t('filter') + ' ' + names.join(', ');
+  } else {
+    fs.style.display = 'none';
+  }
+
+  const grid = document.getElementById('ghost-grid');
+  grid.innerHTML = '';
+
+  if (possible.length === 0 && (confirmedCount > 0 || ruledCount > 0)) {
+    grid.innerHTML = `<div class="no-match"><i class="fas fa-skull-crossbones"></i><h3>${t('no-ghosts-title')}</h3><p>${t('no-ghosts-text')}</p></div>`;
+    return;
+  }
+
+  const maxProb = possible.length > 0 ? possible[0].probability : 0;
+
+  [...possible, ...eliminated].forEach(ghost => {
+    const name = ghost.name[currentLang];
+    const enName = ghost.name['en'];
+    const prob = ghost.possible ? Math.round((ghost.probability / (maxProb || 1)) * 100) : 0;
+    const probClass = prob >= 75 ? 'high' : prob >= 40 ? 'mid' : 'low';
+    const confirmed3 = ghost._confirmed.length === 3 && ghost._confirmed.every(e => [...ghost.evidences, ...(ghost.extraEvidence||[])].includes(e));
+    const isPerfect = ghost.possible && confirmed3;
+    const isMimicCard = ghost.isMimic && ghost.possible;
+
+    const card = document.createElement('div');
+    card.className = `ghost-card${ghost.possible ? '' : ' eliminated'}${isPerfect ? ' perfect-match' : ''}${isMimicCard ? ' mimic-special' : ''}${selectedGhostId === ghost.id ? ' selected' : ''}`;
+    card.onclick = () => ghost.possible && showGhostDetail(ghost.id);
+
+    const allEvs = [...ghost.evidences, ...(ghost.extraEvidence || [])];
+    const chipsHtml = allEvs.map(evId => {
+      const ev = EVIDENCES.find(e => e.id === evId);
+      if (!ev) return '';
+      const isConfirmed = ghost._confirmed.includes(evId);
+      const isRuledOut = ghost._ruledOut.includes(evId);
+      const isExtra = ghost.extraEvidence?.includes(evId);
+      let chipClass = '';
+      if (isExtra && !isConfirmed) chipClass = 'mimic-orb';
+      else if (isConfirmed) chipClass = 'match';
+      else if (isRuledOut) chipClass = 'mismatch';
+      return `<span class="ev-chip ${chipClass}" title="${ev.name[currentLang]}">${ev.abbr}${isExtra ? ' ✦' : ''}</span>`;
+    }).join('');
+
+    const hint = ghost.hint[currentLang];
+
+    card.innerHTML = `
+      ${isMimicCard && !isPerfect ? `<div class="mimic-badge">${t('mimic-badge')}</div>` : ''}
+      ${isPerfect ? `<div class="match-badge">${t('match-badge')}</div>` : ''}
+      <div class="ghost-header">
+        <div class="ghost-name-block">
+          <div class="ghost-name">${name}</div>
+          ${currentLang !== 'en' ? `<div class="ghost-name-en">${enName}</div>` : ''}
+        </div>
+        ${ghost.possible ? `<div class="ghost-prob ${probClass}">${prob}%</div>` : ''}
+      </div>
+      <div class="ghost-evidence-row">${chipsHtml}</div>
+      ${ghost.possible ? `<div class="ghost-hint">💡 <span>${hint}</span></div>` : ''}
+      ${ghost.possible ? `<div class="prob-bar-bg"><div class="prob-bar-fill" style="width:${prob}%;background:${prob>=75?'var(--accent-green)':prob>=40?'var(--accent-gold)':'var(--text-secondary)'}"></div></div>` : ''}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ============================================================
+// GHOST DETAIL
+// ============================================================
+function showGhostDetail(ghostId) {
+  selectedGhostId = ghostId;
+  const ghost = GHOSTS.find(g => g.id === ghostId);
+  if (!ghost) return;
+
+  document.getElementById('guide-main').style.display = 'none';
+  document.getElementById('ghost-detail').classList.add('open');
+
+  const name = ghost.name[currentLang];
+  document.getElementById('detail-ghost-name').textContent = name;
+
+  const allEvs = [...ghost.evidences, ...(ghost.extraEvidence || [])];
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title"><i class="fas fa-flask"></i> ${t('ev-lbl')}</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${allEvs.map(id => {
+          const ev = EVIDENCES.find(e => e.id === id);
+          if (!ev) return '';
+          const state = evidenceStates[id];
+          const isExtra = ghost.extraEvidence?.includes(id);
+          const color = state==='confirmed'?'var(--accent-green)':state==='ruled-out'?'var(--accent-red)':isExtra?'var(--accent-purple)':'var(--accent-cyan)';
+          return `<span style="background:var(--bg-deep);border:1px solid ${color};color:${color};padding:3px 8px;border-radius:5px;font-size:10px;font-family:'JetBrains Mono',monospace">${ev.icon} ${ev.name[currentLang]}${isExtra?' ✦':''}</span>`;
+        }).join('')}
+        ${ghost.isMimic ? `<div style="margin-top:6px;width:100%"><div class="info-box"><i class="fas fa-info-circle"></i> <span>${currentLang==='en'?'✦ Orbs are always generated as a 4th extra evidence by The Mimic':'✦ Los Orbes siempre son generados como 4ª evidencia extra por El Mimo'}</span></div></div>` : ''}
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title"><i class="fas fa-skull"></i> ${t('behavior')}</div>
+      <div class="detail-block"><div class="detail-text">${ghost.behavior[currentLang]}</div></div>
+      <div style="margin-top:8px">
+        <span class="sanity-badge"><i class="fas fa-brain"></i> ${t('sanity-lbl')}: ${ghost.sanity}%</span>
+        <span class="speed-badge"><i class="fas fa-running"></i> ${ghost.speed[currentLang]}</span>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title"><i class="fas fa-fire"></i> ${t('strength')}</div>
+      <div class="strength-item"><i class="fas fa-exclamation-triangle" style="margin-top:2px;flex-shrink:0;font-size:11px"></i> <span>${ghost.strength[currentLang]}</span></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title"><i class="fas fa-shield-alt"></i> ${t('weakness')}</div>
+      <div class="weakness-item"><i class="fas fa-check-circle" style="margin-top:2px;flex-shrink:0;font-size:11px"></i> <span>${ghost.weakness[currentLang]}</span></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title"><i class="fas fa-eye"></i> ${t('key-hint')}</div>
+      <div class="tip-box"><i class="fas fa-lightbulb"></i> <span>${ghost.hint[currentLang]}</span></div>
+    </div>
+  `;
+
+  renderGhosts();
+}
+
+function closeGhostDetail() {
+  selectedGhostId = null;
+  document.getElementById('guide-main').style.display = 'block';
+  document.getElementById('ghost-detail').classList.remove('open');
+  renderGhosts();
+}
+
+// ============================================================
+// GUIDE TABS
+// ============================================================
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.guide-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.guide-section').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.guide-tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+function toggleItem(id, prefix) {
+  const body = document.getElementById(`${prefix}-body-${id}`);
+  const chevron = document.getElementById(`${prefix}-chev-${id}`);
+  if (!body) return;
+  body.classList.toggle('open');
+  if (chevron) chevron.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+// ============================================================
+// RENDER GUIDE
+// ============================================================
+function renderGuide() {
+  renderHowTo();
+  renderCursed();
+  renderTips();
+}
+
+function renderHowTo() {
+  const container = document.getElementById('tab-how-to');
+  container.innerHTML = `<p style="font-size:10px;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">${t('how-to-intro')}</p>`;
+  EVIDENCES.forEach(ev => {
+    const guide = EVIDENCE_GUIDE[ev.id];
+    const steps = guide.steps[currentLang] || guide.steps['es-la'];
+    const tip = guide.tip[currentLang] || guide.tip['es-la'];
+    const warning = guide.warning[currentLang] || guide.warning['es-la'];
+    const name = ev.name[currentLang];
+    const item = document.createElement('div');
+    item.className = 'evidence-guide-item';
+    item.innerHTML = `
+      <div class="evidence-guide-header" onclick="toggleItem('${ev.id}','eg')">
+        <div class="evidence-guide-header-left">
+          <span style="font-size:16px">${ev.icon}</span>
+          <span style="font-size:12px;font-weight:700;color:var(--text-primary)">${name}</span>
+        </div>
+        <i class="fas fa-chevron-down" id="eg-chev-${ev.id}" style="color:var(--text-secondary);font-size:10px;transition:transform 0.3s"></i>
+      </div>
+      <div class="evidence-guide-body" id="eg-body-${ev.id}">
+        ${steps.map((s,i) => `<div class="guide-step"><div class="guide-step-num">${i+1}</div><div class="guide-step-text">${s.text}</div></div>`).join('')}
+        <div class="tip-box"><i class="fas fa-lightbulb"></i> <span>${tip}</span></div>
+        <div class="warning-box"><i class="fas fa-exclamation-triangle"></i> <span>${warning}</span></div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function renderCursed() {
+  const container = document.getElementById('tab-cursed');
+  container.innerHTML = `
+    <div class="info-box" style="margin-bottom:14px"><i class="fas fa-exclamation-circle"></i> <span>${t('cursed-intro')}</span></div>
+  `;
+  CURSED_OBJECTS.forEach(obj => {
+    const name = obj.name[currentLang];
+    const sub = obj.sub[currentLang];
+    const use = obj.use[currentLang];
+    const tips = obj.tips[currentLang];
+    const danger = obj.danger[currentLang];
+    const card = document.createElement('div');
+    card.className = 'cursed-card';
+    card.innerHTML = `
+      <div class="cursed-header" onclick="toggleItem('${obj.id}','co')">
+        <div class="cursed-header-left">
+          <div class="cursed-icon">${obj.icon}</div>
+          <div>
+            <div class="cursed-name">${name}</div>
+            <div class="cursed-sub">${sub}</div>
+          </div>
+        </div>
+        <i class="fas fa-chevron-down" id="co-chev-${obj.id}" style="color:var(--accent-purple);font-size:10px;transition:transform 0.3s"></i>
+      </div>
+      <div class="cursed-body" id="co-body-${obj.id}">
+        <div class="cursed-effect"><strong>${currentLang==='en'?'How it works:':'Cómo funciona:'}</strong> ${use}</div>
+        <div class="cursed-tip2"><i class="fas fa-magic" style="flex-shrink:0;margin-top:2px"></i> <span>${tips}</span></div>
+        <div class="cursed-danger"><i class="fas fa-skull" style="flex-shrink:0;margin-top:2px"></i> <span>${danger}</span></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderTips() {
+  const L = currentLang;
+  const tips = {
+    'es-la': [
+      ['🌡️ Temperatura primero', 'Recorre la casa con el termómetro. El cuarto más frío = cuarto del fantasma. Ahí pon todo tu equipo.'],
+      ['🕯️ Incienso', 'Da 90 segundos de protección durante cacería. Lleva siempre 3 piezas. También atrapa al Yurei.'],
+      ['🧂 Sal', 'Pon sal en entradas clave. Si el fantasma la pisa, deja huellas UV y el EMF sube. El Espectro la evita.'],
+      ['🚪 Escondite', 'Mejor en armarios o cuartos con puerta. Agáchate, apaga equipos y no hagas ruido.'],
+      ['📸 Fotos', 'Fotografía todo: huellas UV, escritura, fantasma visible, eventos, cadáveres. Dan dinero extra.'],
+      ['✝️ Crucifijo', 'Radio de 3m (5m vs Demonio). Colócalo en el cuarto del fantasma ANTES de que cace.'],
+      ['💊 Pastillas de cordura', 'Mantén cordura >50% para evitar cazas tempranas. Muy efectivas contra el Moroi.'],
+      ['🎙️ Micrófono parabólico', 'Detecta sonidos del fantasma a distancia. Revela la ubicación y detecta al Myling y la Banshee.'],
+      ['📷 Cámaras de video', 'Coloca varias en el cuarto del fantasma. Detectan Orbes y D.O.T.S. desde el camión.'],
+      ['⚡ Electricidad', 'Apaga el cuadro eléctrico para frenar al Djinn. Pero la Mare prefiere la oscuridad — cuidado.'],
+    ],
+    'es-es': [
+      ['🌡️ Temperatura primero', 'Recorre la casa con el termómetro. El cuarto más frío = cuarto del fantasma. Ahí coloca todo tu equipo.'],
+      ['🕯️ Incienso', 'Da 90 segundos de protección durante la cacería. Lleva siempre 3 piezas. También atrapa al Yurei.'],
+      ['🧂 Sal', 'Pon sal en entradas clave. Si el fantasma la pisa, deja huellas UV y el EMF sube. El Espectro la evita.'],
+      ['🚪 Escondite', 'Lo mejor es un armario o cuarto con puerta. Agáchate, apaga equipos y no hagas ruido.'],
+      ['📸 Fotos', 'Fotografía todo: huellas UV, escritura, fantasma visible, eventos, cadáveres. Dan dinero extra.'],
+      ['✝️ Crucifijo', 'Radio de 3 m (5 m contra el Demonio). Colócalo en el cuarto del fantasma ANTES de que cace.'],
+      ['💊 Pastillas de cordura', 'Mantén la cordura por encima del 50% para evitar cacerías tempranas. Muy efectivas contra el Moroi.'],
+      ['🎙️ Micrófono parabólico', 'Detecta sonidos del fantasma a distancia. Revela la ubicación y detecta al Myling y la Banshee.'],
+      ['📷 Cámaras de vídeo', 'Coloca varias en el cuarto del fantasma. Detectan Orbes y D.O.T.S. desde el camión.'],
+      ['⚡ Electricidad', 'Apaga el cuadro eléctrico para frenar al Djinn. Pero la Mare prefiere la oscuridad — cuidado.'],
+    ],
+    en: [
+      ['🌡️ Temperature first', 'Walk the house with a thermometer. Coldest room = ghost\'s room. Place all your equipment there.'],
+      ['🕯️ Smudge sticks', 'Gives 90 seconds of hunt protection. Always carry 3. Also traps the Yurei in its room.'],
+      ['🧂 Salt', 'Place salt at key entrances. If the ghost steps in it, it leaves UV footprints and EMF rises. Wraith avoids it.'],
+      ['🚪 Hiding spots', 'Best in closets or rooms with doors. Crouch, turn off equipment and stay quiet.'],
+      ['📸 Photos', 'Photograph everything: UV prints, writing, visible ghost, events, dead bodies. They give bonus money.'],
+      ['✝️ Crucifix', '3m radius (5m vs Demon). Place in the ghost\'s room BEFORE it starts hunting.'],
+      ['💊 Sanity pills', 'Keep sanity above 50% to avoid early hunts. Very effective against Moroi.'],
+      ['🎙️ Parabolic mic', 'Detects ghost sounds from a distance. Reveals location, detects Myling and Banshee.'],
+      ['📷 Video cameras', 'Place several in the ghost\'s room. Detect Orbs and D.O.T.S. from the truck.'],
+      ['⚡ Electricity', 'Turn off breaker to slow down the Jinn. But the Mare prefers darkness — be careful.'],
+    ],
+  };
+
+  const phases = {
+    'es-la': [
+      ['1. Llegada', 'Llena el equipo en el camión. Asigna roles: uno lleva termómetro, uno lleva EMF, uno lleva libro.'],
+      ['2. Exploración', 'Muévete rápido y usa el termómetro en cada cuarto. Identifica el cuarto del fantasma.'],
+      ['3. Recolección', 'Coloca equipo en el cuarto: cámara, D.O.T.S., libro. Usa Caja del Espíritu y UV.'],
+      ['4. Identificación', 'Cruza evidencias con esta guía. Si hay 3 evidencias claras, registra al fantasma.'],
+      ['5. Salida', 'Sal vivo. El dinero extra viene de fotos y completar objetivos opcionales.'],
+    ],
+    'es-es': [
+      ['1. Llegada', 'Rellena el equipo en el camión. Asigna roles: uno lleva termómetro, uno lleva EMF, uno lleva libro.'],
+      ['2. Exploración', 'Muévete rápido y usa el termómetro en cada cuarto. Identifica el cuarto del fantasma.'],
+      ['3. Recolección', 'Coloca equipo en el cuarto: cámara, D.O.T.S., libro. Usa Caja del Espíritu y UV.'],
+      ['4. Identificación', 'Cruza evidencias con esta guía. Si hay 3 evidencias claras, registra al fantasma.'],
+      ['5. Salida', 'Sal vivo. El dinero extra viene de fotos y completar objetivos opcionales.'],
+    ],
+    en: [
+      ['1. Arrival', 'Fill up equipment in the truck. Assign roles: one carries thermometer, one EMF, one book.'],
+      ['2. Exploration', 'Move fast and use the thermometer in each room. Identify the ghost\'s room.'],
+      ['3. Collection', 'Place equipment in the room: camera, D.O.T.S., book. Use Spirit Box and UV.'],
+      ['4. Identification', 'Cross-reference evidence with this guide. If 3 evidences are clear, register the ghost.'],
+      ['5. Exit', 'Get out alive. Bonus money comes from photos and completing optional objectives.'],
+    ],
+  };
+
+  const tipsData = tips[L] || tips['es-la'];
+  const phasesData = phases[L] || phases['es-la'];
+
+  document.getElementById('tab-tips').innerHTML = `
+    <p style="font-size:10px;color:var(--text-secondary);margin-bottom:10px">${t('tips-intro')}</p>
+    <div class="section-header"><i class="fas fa-lightbulb"></i> ${t('tips-section')}</div>
+    ${tipsData.map(([title, text]) => `
+      <div class="tip-card">
+        <div class="tip-card-title">${title}</div>
+        <div class="tip-card-text">${text}</div>
+      </div>
+    `).join('')}
+    <div class="section-header"><i class="fas fa-route"></i> ${t('phase-section')}</div>
+    ${phasesData.map(([title, text]) => `
+      <div class="tip-card" style="border-color:#9B59B666">
+        <div class="tip-card-title" style="color:var(--accent-purple)">${title}</div>
+        <div class="tip-card-text">${text}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetAll() {
+  EVIDENCES.forEach(e => evidenceStates[e.id] = 'none');
+  selectedGhostId = null;
+  closeGhostDetail();
+  renderAll();
+}
+
+// ============================================================
+// RENDER ALL
+// ============================================================
+function renderAll() {
+  renderEvidences();
+  renderGhosts();
+  renderGuide();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+initParticles();
+applyStaticLang();
+renderAll();
+</script>
+</body>
+</html>
