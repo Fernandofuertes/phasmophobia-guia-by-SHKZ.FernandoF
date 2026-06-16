@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phasmophobia — Ghost Guide</title>
+<title>Phasmophobia — Ghost Hunter Pro | Guía Completa de Investigación</title>
+<meta name="description" content="Herramienta profesional para identificar fantasmas en Phasmophobia. Base de datos actualizada, guía de evidencias y objetos malditos.">
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
@@ -347,6 +348,8 @@ const LANGS = {
     'tips-intro': 'Consejos esenciales para sobrevivir la investigación.',
     'tips-section': 'CONSEJOS GENERALES',
     'phase-section': 'FASES DE INVESTIGACIÓN',
+    'new-ghost-badge': 'NUEVO',
+    'updated-badge': 'ACTUALIZADO',
   },
   'es-es': {
     subtitle: 'Guía de Investigación',
@@ -381,6 +384,8 @@ const LANGS = {
     'tips-intro': 'Consejos esenciales para sobrevivir la investigación.',
     'tips-section': 'CONSEJOS GENERALES',
     'phase-section': 'FASES DE INVESTIGACIÓN',
+    'new-ghost-badge': 'NUEVO',
+    'updated-badge': 'ACTUALIZADO',
   },
   en: {
     subtitle: 'Ghost Investigation Guide',
@@ -415,6 +420,8 @@ const LANGS = {
     'tips-intro': 'Essential tips to survive the investigation.',
     'tips-section': 'GENERAL TIPS',
     'phase-section': 'INVESTIGATION PHASES',
+    'new-ghost-badge': 'NEW',
+    'updated-badge': 'UPDATED',
   }
 };
 
@@ -705,8 +712,18 @@ const GHOSTS = [
     sanity: 75, speed: { 'es-la': '2.75 m/s al inicio → 1.0 m/s con el tiempo', 'es-es': '2.75 m/s al inicio → 1.0 m/s con el tiempo', en: '2.75 m/s initially → 1.0 m/s over time' },
     strength: { 'es-la': 'Muy agresivo, activo y rápido cuando los investigadores llegan por primera vez', 'es-es': 'Muy agresivo, activo y rápido cuando los investigadores llegan por primera vez', en: 'Very aggressive, active and fast when investigators first arrive' },
     weakness: { 'es-la': 'Se vuelve menos activo, más lento y menos agresivo con el tiempo. Envejece.', 'es-es': 'Se vuelve menos activo, más lento y menos agresivo con el tiempo. Envejece.', en: 'Becomes less active, slower and less aggressive over time. It ages.' },
-    behavior: { 'es-la': 'Al inicio caza a 75% de cordura, al final solo a 15%. La ouija puede revelar su edad.', 'es-es': 'Al inicio caza al 75% de cordura, al final solo al 15%. La ouija puede revelar su edad.', en: 'Initially hunts at 75% sanity, eventually only at 15%. Ouija can reveal its age.' },
+    behavior: { 'es-la': 'Al inicio caza al 75% de cordura, al final solo al 15%. La ouija puede revelar su edad.', 'es-es': 'Al inicio caza al 75% de cordura, al final solo al 15%. La ouija puede revelar su edad.', en: 'Initially hunts at 75% sanity, eventually only at 15%. Ouija can reveal its age.' },
     hint: { 'es-la': 'Muy agresivo al principio pero se calma mucho con el tiempo = Thaye', 'es-es': 'Muy agresivo al principio pero se calma mucho con el tiempo = Thaye', en: 'Very aggressive at start but calms down significantly over time = Thaye' },
+  },
+  {
+    id: 'goryo_new',
+    name: { 'es-la': 'Goryo (Actualizado)', 'es-es': 'Goryo (Actualizado)', en: 'Goryo (Updated)' },
+    evidences: ['emf5', 'ultraviolet', 'dots'],
+    sanity: 50, speed: { 'es-la': '1.7 m/s (normal)', 'es-es': '1.7 m/s (normal)', en: '1.7 m/s (normal)' },
+    strength: { 'es-la': 'Los D.O.T.S. solo aparecen en cámara cuando no hay nadie cerca. Interacciones frecuentes.', 'es-es': 'Los D.O.T.S. solo aparecen en cámara cuando no hay nadie cerca. Interacciones frecuentes.', en: 'D.O.T.S. only appear on camera when no one is nearby. Frequent interactions.' },
+    weakness: { 'es-la': 'Raramente abandona su habitación favorita durante la investigación.', 'es-es': 'Raramente abandona su habitación favorita durante la investigación.', en: 'Rarely leaves its favorite room during investigation.' },
+    behavior: { 'es-la': 'Debes observar los D.O.T.S. desde fuera del cuarto usando una cámara de video.', 'es-es': 'Debes observar los D.O.T.S. desde fuera del cuarto usando una cámara de vídeo.', en: 'You must observe D.O.T.S. from outside the room using a video camera.' },
+    hint: { 'es-la': 'D.O.T.S. visibles SOLO en cámara sin personas cerca = Goryo confirmado', 'es-es': 'D.O.T.S. visibles SOLO en cámara sin personas cerca = Goryo confirmado', en: 'D.O.T.S. visible ONLY on camera with no people nearby = Confirmed Goryo' },
   },
 ];
 
@@ -761,6 +778,14 @@ const CURSED_OBJECTS = [
     use: { 'es-la': 'Activa una carta para un efecto aleatorio. Cartas posibles: La Torre (activa evento), La Luna (baja cordura a 0%), El Sol (sube cordura a 100%), El Diablo (inicia cacería), La Muerte (apaga luces), La Llama (quema al jugador si está cerca del fantasma), El Colgado (teleporta al cuarto del fantasma), La Sacerdotisa (revive a un jugador muerto), La Rueda (efecto aleatorio adicional), El Ermitaño (atrapa al fantasma en su cuarto).', 'es-es': 'Activa una carta para un efecto aleatorio. Cartas posibles: La Torre (activa evento), La Luna (baja cordura al 0%), El Sol (sube cordura al 100%), El Diablo (inicia cacería), La Muerte (apaga luces), La Llama (quema al jugador si está cerca del fantasma), El Colgado (teletransporta al cuarto del fantasma), La Sacerdotisa (revive a un jugador muerto), La Rueda (efecto aleatorio adicional), El Ermitaño (atrapa al fantasma en su cuarto).', en: 'Draw a card for a random effect. Possible cards: The Tower (triggers event), The Moon (drops sanity to 0%), The Sun (raises sanity to 100%), The Devil (starts hunt), Death (turns off lights), The Flames (burns player if near ghost), The Hanged Man (teleports to ghost room), The High Priestess (revives dead player), Wheel of Fortune (additional random effect), The Hermit (traps ghost in its room).' },
     tips: { 'es-la': 'Las cartas son totalmente aleatorias. La Sacerdotisa es la más útil pues revive compañeros.', 'es-es': 'Las cartas son totalmente aleatorias. La Sacerdotisa es la más útil pues revive a compañeros.', en: 'Cards are completely random. The High Priestess is the most useful as it revives teammates.' },
     danger: { 'es-la': 'El Diablo y La Luna son las más peligrosas. Usa las cartas solo si necesitas desesperadamente algo.', 'es-es': 'El Diablo y La Luna son las más peligrosas. Usa las cartas solo si necesitas desesperadamente algo.', en: 'The Devil and The Moon are the most dangerous. Only use cards if you desperately need something.' },
+  },
+  {
+    id: 'cursed_coin', icon: '🪙', color: '#C0C0C0',
+    name: { 'es-la': 'Moneda Maldita', 'es-es': 'Moneda Maldita', en: 'Cursed Coin' },
+    sub: { 'es-la': 'Objeto de invocación', 'es-es': 'Objeto de invocación', en: 'Summoning object' },
+    use: { 'es-la': 'Lanza la moneda al suelo para invocar una actividad fantasmal inmediata en esa ubicación. El fantasma se teletransportará cerca de la moneda y realizará una interacción forzada. Úsala 3 veces máximo o iniciará una cacería.', 'es-es': 'Lanza la moneda al suelo para invocar una actividad fantasmal inmediata en esa ubicación. El fantasma se teletransportará cerca de la moneda y realizará una interacción forzada. Úsala 3 veces máximo o iniciará una cacería.', en: 'Flip the coin on the ground to summon immediate ghost activity at that location. The ghost will teleport near the coin and perform a forced interaction. Use it max 3 times or it will trigger a hunt.' },
+    tips: { 'es-la': 'Ideal para provocar evidencias rápidamente. Úsala en el cuarto del fantasma para maximizar resultados.', 'es-es': 'Ideal para provocar evidencias rápidamente. Úsala en el cuarto del fantasma para maximizar resultados.', en: 'Ideal for quickly triggering evidence. Use it in the ghost room for maximum results.' },
+    danger: { 'es-la': 'La tercera tirada SIEMPRE inicia una cacería. Prepárate para esconderte después del segundo uso.', 'es-es': 'La tercera tirada SIEMPRE inicia una cacería. Prepárate para esconderte después del segundo uso.', en: 'The third flip ALWAYS triggers a hunt. Be ready to hide after the second use.' },
   },
 ];
 
@@ -1324,6 +1349,8 @@ function renderTips() {
       ['🎙️ Micrófono parabólico', 'Detecta sonidos del fantasma a distancia. Revela la ubicación y detecta al Myling y la Banshee.'],
       ['📷 Cámaras de video', 'Coloca varias en el cuarto del fantasma. Detectan Orbes y D.O.T.S. desde el camión.'],
       ['⚡ Electricidad', 'Apaga el cuadro eléctrico para frenar al Djinn. Pero la Mare prefiere la oscuridad — cuidado.'],
+      ['🔦 Luz UV', 'Revisa puertas, ventanas y superficies después de interacciones. Las huellas duran ~2 minutos.'],
+      ['📖 Libro fantasmal', 'Colócalo en el suelo del cuarto principal. Revisa cada 1-2 minutos por si escribe.'],
     ],
     'es-es': [
       ['🌡️ Temperatura primero', 'Recorre la casa con el termómetro. El cuarto más frío = cuarto del fantasma. Ahí coloca todo tu equipo.'],
@@ -1336,6 +1363,8 @@ function renderTips() {
       ['🎙️ Micrófono parabólico', 'Detecta sonidos del fantasma a distancia. Revela la ubicación y detecta al Myling y la Banshee.'],
       ['📷 Cámaras de vídeo', 'Coloca varias en el cuarto del fantasma. Detectan Orbes y D.O.T.S. desde el camión.'],
       ['⚡ Electricidad', 'Apaga el cuadro eléctrico para frenar al Djinn. Pero la Mare prefiere la oscuridad — cuidado.'],
+      ['🔦 Luz UV', 'Revisa puertas, ventanas y superficies tras las interacciones. Las huellas duran ~2 minutos.'],
+      ['📖 Libro fantasmal', 'Colócalo en el suelo del cuarto principal. Revísalo cada 1-2 minutos por si escribe.'],
     ],
     en: [
       ['🌡️ Temperature first', 'Walk the house with a thermometer. Coldest room = ghost\'s room. Place all your equipment there.'],
@@ -1348,6 +1377,8 @@ function renderTips() {
       ['🎙️ Parabolic mic', 'Detects ghost sounds from a distance. Reveals location, detects Myling and Banshee.'],
       ['📷 Video cameras', 'Place several in the ghost\'s room. Detect Orbs and D.O.T.S. from the truck.'],
       ['⚡ Electricity', 'Turn off breaker to slow down the Jinn. But the Mare prefers darkness — be careful.'],
+      ['🔦 UV Light', 'Check doors, windows and surfaces after interactions. Prints last ~2 minutes.'],
+      ['📖 Ghost Book', 'Place it on the floor of the main room. Check every 1-2 minutes for writing.'],
     ],
   };
 
